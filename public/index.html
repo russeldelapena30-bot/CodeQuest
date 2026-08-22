@@ -215,7 +215,7 @@
   <div id="quiz-view" class="view-section">
     <div class="card">
       <h2>Playable DSA Topic Quiz</h2>
-      <p>Select any topic, complete the quiz, and record your score directly to your database profile.</p>
+      <p>Select any topic, answer all 10 questions, and submit your score directly to your database profile.</p>
 
       <div class="form-group" style="margin-bottom: 25px;">
         <label for="quiz-topic-select">Select Topic to Test:</label>
@@ -349,7 +349,7 @@
     switchTab('auth');
   }
 
-  // 8 DSA TOPICS WITH TAILORED QUIZZES
+  // 8 DSA TOPICS WITH 10 TAILORED QUIZ QUESTIONS EACH
   const TOPICS = [
     { 
       id: 'bigo', 
@@ -361,16 +361,16 @@
         { h: 'Space Complexity', b: 'Measures how much memory an algorithm requires relative to input size.' }
       ],
       quiz: [
-        {
-          q: "What is the time complexity of accessing an element in an array directly by index?",
-          options: ["O(1)", "O(N)", "O(log N)", "O(N²)"],
-          answer: 0
-        },
-        {
-          q: "Which Big-O complexity represents quadratic growth (e.g., nested loops)?",
-          options: ["O(N)", "O(N²)", "O(1)", "O(log N)"],
-          answer: 1
-        }
+        { q: "What is the time complexity of accessing an element in an array directly by index?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "Which Big-O complexity represents quadratic growth (e.g., standard nested loops)?", options: ["O(N)", "O(N²)", "O(1)", "O(log N)"], answer: 1 },
+        { q: "What is the worst-case time complexity of Binary Search?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 2 },
+        { q: "Which complexity class represents the slowest rate of growth as N increases?", options: ["O(N!)", "O(N²)", "O(N)", "O(1)"], answer: 3 },
+        { q: "If an algorithm drops half of the remaining data in each step, what is its time complexity?", options: ["O(N)", "O(log N)", "O(N log N)", "O(1)"], answer: 1 },
+        { q: "What does Space Complexity measure?", options: ["Execution speed", "Memory usage relative to input size", "Disk read rate", "Lines of code"], answer: 1 },
+        { q: "What is the Big-O time complexity of linear search across an unsorted array?", options: ["O(1)", "O(log N)", "O(N)", "O(N log N)"], answer: 2 },
+        { q: "When dropping constants in Big-O analysis, what does O(2N + 5) simplify to?", options: ["O(2N)", "O(5)", "O(N)", "O(N²)"], answer: 2 },
+        { q: "Which Big-O complexity is common in optimal comparison-based sorting algorithms like Merge Sort?", options: ["O(N)", "O(N log N)", "O(N²)", "O(2^N)"], answer: 1 },
+        { q: "In Big-O notation, what does Big-O specifically describe?", options: ["Best-case scenario", "Upper bound / Worst-case scenario", "Average runtime only", "Exact execution time in milliseconds"], answer: 1 }
       ]
     },
     { 
@@ -383,16 +383,16 @@
         { h: 'Insertions & Deletions', b: 'Requires shifting elements, resulting in O(N) worst-case speed.' }
       ],
       quiz: [
-        {
-          q: "Why is inserting an element at the beginning of an array an O(N) operation?",
-          options: ["Array size is fixed", "Existing elements must shift forward in memory", "Hash collision resolution", "Requires tree balancing"],
-          answer: 1
-        },
-        {
-          q: "How are contiguous array elements laid out in memory?",
-          options: ["Randomly connected via pointers", "In sequential adjacent memory locations", "In a hierarchical tree structure", "In separate hash buckets"],
-          answer: 1
-        }
+        { q: "Why is inserting an element at index 0 of an array an O(N) operation?", options: ["Array size is fixed", "Existing elements must shift forward in memory", "Hash collision resolution", "Requires tree rebalancing"], answer: 1 },
+        { q: "How are contiguous array elements laid out in physical memory?", options: ["Randomly connected via pointers", "In sequential adjacent memory locations", "In a hierarchical tree structure", "In separate hash buckets"], answer: 1 },
+        { q: "What formula allows O(1) array index lookup?", options: ["base_address + (index * element_size)", "base_address * index", "index / total_elements", "base_address + index_squared"], answer: 0 },
+        { q: "In programming, strings are typically implemented under the hood as:", options: ["Linked Lists of nodes", "Arrays of characters", "Hash tables", "Binary search trees"], answer: 1 },
+        { q: "What is the time complexity of updating an element at a known index in an array?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "What is a main disadvantage of standard static arrays?", options: ["Slow lookup speed", "Fixed size allocated upfront", "Cannot store primitive types", "High pointer memory overhead"], answer: 1 },
+        { q: "What is the average time complexity of appending an item to a Dynamic Array (e.g., ArrayList/vector)?", options: ["O(1) amortized", "O(N) strictly", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "Which technique uses two pointers moving towards each other to solve string/array problems efficiently?", options: ["Two-Pointer Technique", "Sliding Window", "Divide and Conquer", "Breadth-First Search"], answer: 0 },
+        { q: "Deleting the last element of an array of size N takes how long?", options: ["O(1)", "O(N)", "O(log N)", "O(N log N)"], answer: 0 },
+        { q: "What happens when you access an index beyond an array's bounds in low-level languages like C?", options: ["Automatic resizing", "Undefined behavior or buffer overflow", "Returns null automatically", "Converts into a linked list"], answer: 1 }
       ]
     },
     { 
@@ -405,16 +405,16 @@
         { h: 'Efficiency', b: 'O(1) node insertion at known positions, O(N) linear search.' }
       ],
       quiz: [
-        {
-          q: "What addition does a Doubly Linked List node have compared to a Singly Linked List node?",
-          options: ["Data payload", "Pointer to next node", "Pointer to previous node", "Root index pointer"],
-          answer: 2
-        },
-        {
-          q: "What is the worst-case time complexity for searching a value in an unsorted linked list?",
-          options: ["O(1)", "O(log N)", "O(N)", "O(N²)"],
-          answer: 2
-        }
+        { q: "What addition does a Doubly Linked List node have compared to a Singly Linked List node?", options: ["Data payload", "Pointer to next node", "Pointer to previous node", "Root index pointer"], answer: 2 },
+        { q: "What is the worst-case time complexity for searching a value in an unsorted singly linked list?", options: ["O(1)", "O(log N)", "O(N)", "O(N²)"], answer: 2 },
+        { q: "What does the 'head' pointer in a Linked List reference?", options: ["The last node", "The middle node", "The first node", "The total size"], answer: 2 },
+        { q: "Inserting a new node at the very beginning (head) of a Linked List takes how long?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "In a Circular Linked List, what does the tail node's 'next' pointer reference?", options: ["null", "The head node", "The prev node", "A random node"], answer: 1 },
+        { q: "Unlike arrays, why do Linked Lists NOT require contiguous memory allocation?", options: ["Nodes use pointers to reference memory locations", "Nodes are stored in CPU registers", "Nodes use hash tables", "Memory is pre-reserved"], answer: 0 },
+        { q: "Floyd's Cycle-Finding algorithm (Turtle and Hare) is used to detect what in a Linked List?", options: ["Memory leaks", "A loop/cycle", "Duplicate values", "List length"], answer: 1 },
+        { q: "To delete a node in a Singly Linked List given a pointer to its predecessor, what pointer update is needed?", options: ["prev.next = current.next", "prev = current.next", "current.next = head", "head = current"], answer: 0 },
+        { q: "What is a main drawback of Linked Lists over Arrays?", options: ["Insertion is slower", "No O(1) random access by index", "Fixed storage capacity", "Cannot handle dynamic data"], answer: 1 },
+        { q: "In a Doubly Linked List, what does the 'prev' pointer of the head node point to?", options: ["Tail node", "Null", "Self", "Next node"], answer: 1 }
       ]
     },
     { 
@@ -426,16 +426,16 @@
         { h: 'Core Operations', b: 'Push (insert top) and Pop (remove top) both operate in O(1) time.' }
       ],
       quiz: [
-        {
-          q: "Which access rule describes a Stack data structure?",
-          options: ["First-In, First-Out (FIFO)", "Last-In, First-Out (LIFO)", "Random Access", "Sorted Access"],
-          answer: 1
-        },
-        {
-          q: "Which operation removes the top item from a stack?",
-          options: ["Push", "Enqueue", "Pop", "Peek"],
-          answer: 2
-        }
+        { q: "Which access rule describes a Stack data structure?", options: ["First-In, First-Out (FIFO)", "Last-In, First-Out (LIFO)", "Random Access", "Sorted Access"], answer: 1 },
+        { q: "Which operation removes the top item from a stack?", options: ["Push", "Enqueue", "Pop", "Peek"], answer: 2 },
+        { q: "Which operation views the top element of a stack without removing it?", options: ["Pop", "Peek / Top", "Push", "Dequeue"], answer: 1 },
+        { q: "What condition occurs when attempting to pop from an empty stack?", options: ["Stack Overflow", "Stack Underflow", "Memory Leak", "Deadlock"], answer: 1 },
+        { q: "Which real-world computing mechanism relies directly on a stack?", options: ["Function call stack / recursion tracking", "Printer print queue", "CPU round-robin scheduling", "Network packet routing"], answer: 0 },
+        { q: "What is the time complexity of both Push and Pop operations in a stack?", options: ["O(1)", "O(N)", "O(log N)", "O(N log N)"], answer: 0 },
+        { q: "If elements 'A', 'B', 'C' are pushed onto a stack in order, what is the order of elements popped?", options: ["A, B, C", "C, B, A", "B, A, C", "C, A, B"], answer: 1 },
+        { q: "Which expression parsing conversion uses a stack?", options: ["Infix to Postfix (Reverse Polish Notation)", "SQL query parsing", "Binary to Hexadecimal", "Base64 encoding"], answer: 0 },
+        { q: "What error occurs if recursive calls exceed the maximum call stack limit?", options: ["Stack Overflow", "NullPointerException", "Segmentation Fault", "Out of Memory Exception"], answer: 0 },
+        { q: "Undo/Redo functionality in text editors is commonly implemented using:", options: ["Two stacks", "One queue", "A binary search tree", "A graph"], answer: 0 }
       ]
     },
     { 
@@ -447,16 +447,16 @@
         { h: 'Core Operations', b: 'Enqueue (add back) and Dequeue (remove front) run in O(1) time.' }
       ],
       quiz: [
-        {
-          q: "In a standard Queue, where are new items inserted?",
-          options: ["Front", "Rear/Back", "Middle", "At a Random Index"],
-          answer: 1
-        },
-        {
-          q: "Which real-world analogy best describes a Queue?",
-          options: ["A stack of plates", "A line of people waiting at a bank ticket counter", "A web browser back button", "A bookshelf"],
-          answer: 1
-        }
+        { q: "In a standard Queue, where are new items inserted?", options: ["Front", "Rear / Back", "Middle", "Random Index"], answer: 1 },
+        { q: "Which processing order defines a standard Queue?", options: ["Last-In, First-Out (LIFO)", "First-In, First-Out (FIFO)", "Highest Value First", "Random Order"], answer: 1 },
+        { q: "Which operation removes an item from the front of a Queue?", options: ["Enqueue", "Dequeue", "Push", "Pop"], answer: 1 },
+        { q: "What is the time complexity of Enqueue and Dequeue operations in an efficient queue?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "A Queue where elements are removed based on priority rather than arrival order is called a:", options: ["Circular Queue", "Priority Queue", "Double-Ended Queue (Deque)", "Stack Queue"], answer: 1 },
+        { q: "What data structure allows insertion and deletion at both front and rear ends?", options: ["Deque (Double-ended queue)", "Single queue", "Stack", "Binary Heap"], answer: 0 },
+        { q: "In web servers, incoming requests waiting for processing are stored in a:", options: ["Stack", "Queue", "Hash Table", "Binary Tree"], answer: 1 },
+        { q: "In an array-based circular queue, what operation wraps indices around the array size?", options: ["Modulo operator (%)", "Bitwise AND", "Division operator (/)", "Addition"], answer: 0 },
+        { q: "Attempting to dequeue from an empty queue causes:", options: ["Queue Underflow", "Queue Overflow", "Deadlock", "Segmentation Fault"], answer: 0 },
+        { q: "Which graph traversal algorithm utilizes a Queue internally?", options: ["Depth-First Search (DFS)", "Breadth-First Search (BFS)", "Dijkstra's Algorithm", "Kruskal's Algorithm"], answer: 1 }
       ]
     },
     { 
@@ -469,16 +469,16 @@
         { h: 'Collisions', b: 'Handled via Chaining (linked list buckets) or Open Addressing.' }
       ],
       quiz: [
-        {
-          q: "What is the average time complexity for key lookups in a Hash Table?",
-          options: ["O(1)", "O(N)", "O(log N)", "O(N log N)"],
-          answer: 0
-        },
-        {
-          q: "What occurs when two distinct keys generate the exact same hash code?",
-          options: ["Stack overflow", "Hash collision", "Memory leak", "Binary split"],
-          answer: 1
-        }
+        { q: "What is the average time complexity for searching a key in a Hash Table?", options: ["O(1)", "O(N)", "O(log N)", "O(N log N)"], answer: 0 },
+        { q: "What occurs when two distinct keys yield the exact same hash code index?", options: ["Stack overflow", "Hash collision", "Memory leak", "Binary split"], answer: 1 },
+        { q: "Collision resolution technique using a linked list at each table bucket is called:", options: ["Open Addressing", "Separate Chaining", "Linear Probing", "Quadratic Probing"], answer: 1 },
+        { q: "In Open Addressing, probing sequentially through adjacent slots to find an open spot is called:", options: ["Linear Probing", "Double Hashing", "Separate Chaining", "Rehashing"], answer: 0 },
+        { q: "What is the worst-case search time complexity for a Hash Table with many collisions?", options: ["O(1)", "O(log N)", "O(N)", "O(N²)"], answer: 2 },
+        { q: "What metric represents the ratio of occupied slots to total capacity in a Hash Table?", options: ["Collision Rate", "Load Factor", "Fill Quotient", "Hash Ratio"], answer: 1 },
+        { q: "What process happens when a Hash Table's Load Factor exceeds its threshold?", options: ["Rehashing into a larger table", "Immediate truncation", "Garbage collection", "Conversion to a stack"], answer: 0 },
+        { q: "A good hash function should be deterministic and:", options: ["Distribute keys uniformly across buckets", "Produce identical hashes for all inputs", "Depend on current system time", "Execute in O(N) time"], answer: 0 },
+        { q: "What data structure is typically used for a Hash Set (storing unique keys without values)?", options: ["Underlying Hash Table with dummy values", "Binary Search Tree", "Linked List only", "Array without hashing"], answer: 0 },
+        { q: "Which data structure guarantees O(1) key lookups, insertions, and deletions on average?", options: ["Hash Table", "Binary Search Tree", "Sorted Array", "Doubly Linked List"], answer: 0 }
       ]
     },
     { 
@@ -490,16 +490,16 @@
         { h: 'Binary Search Trees (BST)', b: 'Left child < Parent < Right child. Enables O(log N) average searches.' }
       ],
       quiz: [
-        {
-          q: "In a valid Binary Search Tree (BST), where are values smaller than the parent node placed?",
-          options: ["Right child subtree", "Left child subtree", "At the root only", "Leaves only"],
-          answer: 1
-        },
-        {
-          q: "What is the average search time complexity in a balanced BST?",
-          options: ["O(1)", "O(log N)", "O(N)", "O(N²)"],
-          answer: 1
-        }
+        { q: "In a valid Binary Search Tree (BST), where are values smaller than the parent node placed?", options: ["Right child subtree", "Left child subtree", "At the root only", "In leaf nodes only"], answer: 1 },
+        { q: "What is the maximum number of children a node in a Binary Tree can have?", options: ["1", "2", "3", "Unlimited"], answer: 1 },
+        { q: "What is the average search time complexity in a balanced BST?", options: ["O(1)", "O(log N)", "O(N)", "O(N²)"], answer: 1 },
+        { q: "Which tree traversal processes nodes in order: Left, Root, Right?", options: ["Pre-order", "In-order", "Post-order", "Level-order"], answer: 1 },
+        { q: "In-order traversal on a Binary Search Tree visits nodes in what sequence?", options: ["Descending order", "Sorted ascending order", "Random order", "Level by level"], answer: 1 },
+        { q: "Which tree traversal processes nodes in order: Root, Left, Right?", options: ["Pre-order", "In-order", "Post-order", "Breadth-first"], answer: 0 },
+        { q: "What is the worst-case search complexity in an unbalanced/skewed BST (resembling a linked list)?", options: ["O(log N)", "O(1)", "O(N)", "O(N log N)"], answer: 2 },
+        { q: "What is a node called if it has zero children?", options: ["Root node", "Leaf node", "Internal node", "Ancestor node"], answer: 1 },
+        { q: "AVL Trees and Red-Black Trees are examples of what tree category?", options: ["Self-Balancing Binary Search Trees", "Heaps", "B-Trees", "Tries"], answer: 0 },
+        { q: "The top node in a tree hierarchy with no parent is called the:", options: ["Leaf", "Root", "Head", "Branch"], answer: 1 }
       ]
     },
     { 
@@ -511,16 +511,16 @@
         { h: 'Traversals', b: 'BFS (Breadth-First using Queue) vs DFS (Depth-First using Stack).' }
       ],
       quiz: [
-        {
-          q: "Which helper data structure is typically used to implement Breadth-First Search (BFS)?",
-          options: ["Stack", "Queue", "Binary Heap", "Hash Set"],
-          answer: 1
-        },
-        {
-          q: "What components make up a standard Graph?",
-          options: ["Keys and Values", "Vertices (Nodes) and Edges (Links)", "Pointers and Offsets", "Rows and Columns"],
-          answer: 1
-        }
+        { q: "Which helper data structure is typically used to implement Breadth-First Search (BFS)?", options: ["Stack", "Queue", "Binary Heap", "Hash Map"], answer: 1 },
+        { q: "Which traversal explores as deep as possible along a branch before backtracking?", options: ["Breadth-First Search (BFS)", "Depth-First Search (DFS)", "Level-Order Search", "Dijkstra's Search"], answer: 1 },
+        { q: "What elements make up a standard Graph data structure?", options: ["Keys and Values", "Vertices (Nodes) and Edges (Links)", "Pointers and Offsets", "Rows and Columns"], answer: 1 },
+        { q: "A graph whose edges have specific directional indicators (A -> B) is called a:", options: ["Undirected Graph", "Directed Graph (Digraph)", "Weighted Graph", "Bipartite Graph"], answer: 1 },
+        { q: "Which algorithm finds the single-source shortest path in a weighted graph with non-negative weights?", options: ["Dijkstra's Algorithm", "Kruskal's Algorithm", "Prim's Algorithm", "Bellman-Ford Algorithm"], answer: 0 },
+        { q: "What graph representation matrix uses an N x N boolean table to store edge connections?", options: ["Adjacency Matrix", "Adjacency List", "Incidence Matrix", "Edge Array"], answer: 0 },
+        { q: "Helper data structure used in DFS to track active recursion or explicit traversal steps:", options: ["Queue", "Stack", "Priority Queue", "Disjoint Set"], answer: 1 },
+        { q: "A graph with no cycles is called an:", options: ["Cyclic Graph", "Acyclic Graph", "Complete Graph", "Dense Graph"], answer: 1 },
+        { q: "Which graph representation uses an array of lists to store neighbors for each vertex efficiently?", options: ["Adjacency List", "Adjacency Matrix", "Edge List", "Incidence List"], answer: 0 },
+        { q: "What algorithm is used to find a Minimum Spanning Tree (MST) using a greedy edge selection strategy?", options: ["Kruskal's Algorithm", "Dijkstra's Algorithm", "Floyd-Warshall Algorithm", "A* Algorithm"], answer: 0 }
       ]
     }
   ];
@@ -574,7 +574,7 @@
     }
 
     container.innerHTML = topic.quiz.map((qObj, qIdx) => `
-      <div style="margin-bottom: 25px; background: var(--surface); padding: 18px; border-radius: 8px; border: 1px solid var(--border);">
+      <div style="margin-bottom: 20px; background: var(--surface); padding: 18px; border-radius: 8px; border: 1px solid var(--border);">
         <p style="margin-top:0; font-weight: 600; color: #f2a65a;">Question ${qIdx + 1}: ${qObj.q}</p>
         ${qObj.options.map((opt, optIdx) => `
           <label class="quiz-option-label">
