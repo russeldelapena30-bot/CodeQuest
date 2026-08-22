@@ -122,6 +122,30 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+// Forgot Password
+app.post('/api/forgot-password', async (req, res) => {
+  const { email, new_password } = req.body;
+
+  if (!email || !new_password) {
+    return res.status(400).json({ error: 'Email and new password are required' });
+  }
+
+  db.get(`SELECT id FROM users WHERE email = ?`, [email], async (err, user) => {
+    if (err) return res.status(500).json({ error: 'Database query error' });
+    if (!user) return res.status(404).json({ error: 'No account found with this email' });
+
+    try {
+      const hashedPassword = await bcrypt.hash(new_password, 10);
+      db.run(`UPDATE users SET password = ? WHERE email = ?`, [hashedPassword, email], function (err) {
+        if (err) return res.status(500).json({ error: 'Failed to reset password' });
+        res.json({ message: 'Password reset successful! You can now log in.' });
+      });
+    } catch (err) {
+      res.status(500).json({ error: 'Server error processing password reset' });
+    }
+  });
+});
+
 // Verify Current Token / Get Active Profile
 app.get('/api/me', authenticateToken, (req, res) => {
   db.get(`SELECT id, username, email, first_name, last_name FROM users WHERE id = ?`, [req.user.id], (err, user) => {
@@ -145,6 +169,36 @@ app.post('/api/scores', authenticateToken, (req, res) => {
   db.run(sql, [user_id, quiz_name, score, max_score], function (err) {
     if (err) return res.status(500).json({ error: 'Failed to record score' });
     res.status(201).json({ message: 'Score saved to database!', scoreId: this.lastID });
+  });
+});
+
+// --- ADMIN DASHBOARD ENDPOINT ---
+
+// Get All Users & Quiz Scores (Admin Only)
+app.get('/api/admin/user-scores', authenticateToken, (req, res) => {
+  if (req.user.username !== 'admin') {
+    return res.status(403).json({ error: 'Access denied. Admin access required.' });
+  }
+
+  const sql = `
+    SELECT 
+      u.id AS user_id,
+      u.username,
+      u.first_name,
+      u.last_name,
+      u.email,
+      s.quiz_name,
+      s.score,
+      s.max_score,
+      s.created_at
+    FROM users u
+    LEFT JOIN scores s ON u.id = s.user_id
+    ORDER BY u.id ASC, s.created_at DESC
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'Failed to retrieve admin records' });
+    res.json(rows);
   });
 });
 
