@@ -150,4 +150,4 @@ app.post('/api/scores', authenticateToken, (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
-});sw
+});
