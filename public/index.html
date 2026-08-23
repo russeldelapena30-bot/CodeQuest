@@ -3,11 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CodeQuest - Admin Dashboard</title>
+  <title>CodeQuest - Portal</title>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
     .container { max-width: 1100px; margin: 0 auto; }
+    
+    /* Login Box Styles */
+    .login-container { max-width: 400px; margin: 80px auto; background-color: #1e293b; padding: 30px; border-radius: 8px; border: 1px solid #334155; }
+    .login-container h2 { color: #38bdf8; margin-top: 0; text-align: center; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; color: #94a3b8; font-size: 14px; }
+    .form-group input { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #334155; background-color: #0f172a; color: white; }
+    .btn-submit { width: 100%; padding: 10px; background-color: #0284c7; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .btn-submit:hover { background-color: #0369a1; }
+
+    /* Admin Dashboard Styles */
     header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155; padding-bottom: 15px; margin-bottom: 20px; }
     h1 { color: #38bdf8; margin: 0; font-size: 24px; }
     .btn-logout { background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -30,7 +41,25 @@
 </head>
 <body>
 
-  <div class="container">
+  <!-- VIEW 1: LOGIN FORM -->
+  <div id="login-view" class="login-container">
+    <h2>CodeQuest Login</h2>
+    <div id="login-error" class="error-msg"></div>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit" class="btn-submit">Log In</button>
+    </form>
+  </div>
+
+  <!-- VIEW 2: ADMIN DASHBOARD -->
+  <div id="admin-view" class="container" style="display: none;">
     <header>
       <h1>CodeQuest Admin Dashboard</h1>
       <button class="btn-logout" onclick="logout()">Logout</button>
@@ -63,16 +92,81 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', loadAdminDashboard);
+    document.addEventListener('DOMContentLoaded', initApp);
 
+    function initApp() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        showAdminView();
+        loadAdminDashboard();
+      } else {
+        showLoginView();
+      }
+    }
+
+    // --- VIEW SWITCHING LOGIC ---
+    function showLoginView() {
+      document.getElementById('login-view').style.display = 'block';
+      document.getElementById('admin-view').style.display = 'none';
+    }
+
+    function showAdminView() {
+      document.getElementById('login-view').style.display = 'none';
+      document.getElementById('admin-view').style.display = 'block';
+    }
+
+    // --- LOGIN FORM HANDLER ---
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usernameInput = document.getElementById('username').value;
+      const passwordInput = document.getElementById('password').value;
+      const errorMsg = document.getElementById('login-error');
+
+      errorMsg.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: usernameInput, password: passwordInput })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+
+        // Store authentication credentials
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        // Switch to admin view and render data
+        showAdminView();
+        loadAdminDashboard();
+      } catch (err) {
+        errorMsg.textContent = err.message;
+        errorMsg.style.display = 'block';
+      }
+    });
+
+    // --- ADMIN DASHBOARD LOGIC ---
     async function loadAdminDashboard() {
       const token = localStorage.getItem('token');
-      if (!token) return showError('Access denied. Please log in as admin.');
+      if (!token) {
+        logout();
+        return;
+      }
 
       try {
         const response = await fetch('/api/admin/user-scores', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
+
+        if (response.status === 401 || response.status === 403) {
+          logout();
+          return;
+        }
 
         if (!response.ok) throw new Error('Failed to fetch user records.');
 
@@ -93,13 +187,12 @@
       }
 
       tableBody.innerHTML = records.map(row => {
-        const fullName = `${row.first_name} ${row.last_name}`;
+        const fullName = `${row.first_name || ''} ${row.last_name || ''}`;
         const quiz = row.quiz_name ? row.quiz_name : '<span class="no-score">No quiz taken</span>';
         const scoreDisplay = row.score !== null && row.score !== undefined 
           ? `<span class="score-badge">${row.score} / ${row.max_score}</span>` 
           : '<span class="no-score">N/A</span>';
         
-        // Prevent deleting the main admin account
         const deleteButton = row.username === 'admin' 
           ? '<span style="color: #64748b; font-size: 12px;">(Protected)</span>' 
           : `<button class="btn-delete" onclick="deleteUser(${row.user_id}, '${escapeHtml(row.username)}')">Delete</button>`;
@@ -138,7 +231,7 @@
         }
 
         alert(result.message);
-        loadAdminDashboard(); // Refresh table view
+        loadAdminDashboard();
       } catch (err) {
         alert('Server error during deletion.');
       }
@@ -150,10 +243,18 @@
       errorBox.style.display = 'block';
     }
 
+    // --- FULLY FIXED LOGOUT ---
     function logout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/index.html';
+      // 1. Wipe out local storage
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // 2. Clear input fields
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+
+      // 3. Switch back to login screen immediately
+      showLoginView();
     }
 
     function escapeHtml(str) {
