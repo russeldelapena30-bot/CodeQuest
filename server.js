@@ -13,14 +13,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Initialize SQLite Database
-const db = new sqlite3.Database('./codequest.db', (err) => {
+// Ensure SQLite uses a permanent, absolute path in your project directory
+const dbPath = path.resolve(__dirname, 'codequest.db');
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) console.error('Database connection error:', err);
-  else console.log('Connected to SQLite database: codequest.db');
+  else console.log(`Connected to SQLite database at: ${dbPath}`);
 });
 
-// Create Database Tables
+// Initialize Database Tables and Auto-Seed Admin Account
 db.serialize(() => {
+  // 1. Create Users Table
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,6 +35,7 @@ db.serialize(() => {
     )
   `);
 
+  // 2. Create Scores Table
   db.run(`
     CREATE TABLE IF NOT EXISTS scores (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,6 +47,35 @@ db.serialize(() => {
       FOREIGN KEY (user_id) REFERENCES users (id)
     )
   `);
+
+  // 3. AUTO-SEED ADMIN ACCOUNT (Saves automatically on startup)
+  const adminUsername = 'admin';
+  const adminEmail = 'admin@codequest.com';
+  const adminPasswordRaw = 'admin123'; // Default admin password
+
+  db.get(`SELECT id FROM users WHERE username = ?`, [adminUsername], async (err, row) => {
+    if (err) {
+      console.error('Error checking for admin account:', err);
+      return;
+    }
+    if (!row) {
+      try {
+        const hashedPassword = await bcrypt.hash(adminPasswordRaw, 10);
+        const seedSql = `
+          INSERT INTO users (username, password, email, first_name, last_name, middle_initial)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        db.run(seedSql, [adminUsername, hashedPassword, adminEmail, 'Admin', 'User', 'System'], function (seedErr) {
+          if (seedErr) console.error('Failed to auto-seed admin user:', seedErr);
+          else console.log(`SUCCESS: Admin account initialized (Username: '${adminUsername}', Password: '${adminPasswordRaw}')`);
+        });
+      } catch (hashErr) {
+        console.error('Error hashing admin password:', hashErr);
+      }
+    } else {
+      console.log("Admin account is saved and ready.");
+    }
+  });
 });
 
 // Middleware to protect routes
