@@ -204,7 +204,7 @@ app.post('/api/scores', authenticateToken, (req, res) => {
   });
 });
 
-// --- ADMIN DASHBOARD ENDPOINT ---
+// --- ADMIN DASHBOARD ENDPOINTS ---
 
 // Get All Users & Quiz Scores (Admin Only)
 app.get('/api/admin/user-scores', authenticateToken, (req, res) => {
@@ -231,6 +231,30 @@ app.get('/api/admin/user-scores', authenticateToken, (req, res) => {
   db.all(sql, [], (err, rows) => {
     if (err) return res.status(500).json({ error: 'Failed to retrieve admin records' });
     res.json(rows);
+  });
+});
+
+// Delete User and their Scores (Admin Only)
+app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
+  if (req.user.username !== 'admin') {
+    return res.status(403).json({ error: 'Access denied. Admin access required.' });
+  }
+
+  const userId = req.params.id;
+
+  if (parseInt(userId) === req.user.id) {
+    return res.status(400).json({ error: 'Cannot delete the admin account.' });
+  }
+
+  db.run(`DELETE FROM scores WHERE user_id = ?`, [userId], (err) => {
+    if (err) return res.status(500).json({ error: 'Failed to delete user scores.' });
+
+    db.run(`DELETE FROM users WHERE id = ?`, [userId], function (err) {
+      if (err) return res.status(500).json({ error: 'Failed to delete user.' });
+      if (this.changes === 0) return res.status(404).json({ error: 'User not found.' });
+
+      res.json({ message: 'User deleted successfully.' });
+    });
   });
 });
 
