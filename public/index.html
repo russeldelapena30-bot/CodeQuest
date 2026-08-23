@@ -9,14 +9,19 @@
     body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
     .container { max-width: 1100px; margin: 0 auto; }
     
-    /* Login Box Styles */
-    .login-container { max-width: 400px; margin: 80px auto; background-color: #1e293b; padding: 30px; border-radius: 8px; border: 1px solid #334155; }
-    .login-container h2 { color: #38bdf8; margin-top: 0; text-align: center; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; color: #94a3b8; font-size: 14px; }
+    /* Card Containers */
+    .auth-container { max-width: 450px; margin: 40px auto; background-color: #1e293b; padding: 30px; border-radius: 8px; border: 1px solid #334155; }
+    .auth-container h2 { color: #38bdf8; margin-top: 0; text-align: center; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; margin-bottom: 4px; color: #94a3b8; font-size: 13px; }
     .form-group input { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #334155; background-color: #0f172a; color: white; }
-    .btn-submit { width: 100%; padding: 10px; background-color: #0284c7; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    
+    .btn-submit { width: 100%; padding: 10px; background-color: #0284c7; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     .btn-submit:hover { background-color: #0369a1; }
+    
+    .toggle-links { text-align: center; margin-top: 15px; font-size: 13px; color: #94a3b8; }
+    .toggle-links a { color: #38bdf8; text-decoration: none; font-weight: bold; cursor: pointer; }
+    .toggle-links a:hover { text-decoration: underline; }
 
     /* Admin Dashboard Styles */
     header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155; padding-bottom: 15px; margin-bottom: 20px; }
@@ -36,36 +41,99 @@
     
     .score-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-weight: bold; background-color: #0284c7; color: white; }
     .no-score { color: #94a3b8; font-style: italic; }
-    .error-msg { background-color: #7f1d1d; color: #fca5a5; padding: 15px; border-radius: 6px; display: none; margin-bottom: 20px; }
+    .error-msg { background-color: #7f1d1d; color: #fca5a5; padding: 10px; border-radius: 6px; display: none; margin-bottom: 15px; font-size: 14px; text-align: center; }
+    .success-msg { background-color: #065f46; color: #a7f3d0; padding: 10px; border-radius: 6px; display: none; margin-bottom: 15px; font-size: 14px; text-align: center; }
   </style>
 </head>
 <body>
 
   <!-- VIEW 1: LOGIN FORM -->
-  <div id="login-view" class="login-container">
+  <div id="login-view" class="auth-container">
     <h2>CodeQuest Login</h2>
     <div id="login-error" class="error-msg"></div>
     <form id="login-form">
       <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" required>
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" required>
       </div>
       <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" required>
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required>
       </div>
       <button type="submit" class="btn-submit">Log In</button>
     </form>
+    <div class="toggle-links">
+      <p>Don't have an account? <a onclick="showView('register-view')">Register</a></p>
+      <p><a onclick="showView('forgot-view')">Forgot Password?</a></p>
+    </div>
   </div>
 
-  <!-- VIEW 2: ADMIN DASHBOARD -->
+  <!-- VIEW 2: REGISTER FORM -->
+  <div id="register-view" class="auth-container" style="display: none;">
+    <h2>Create Account</h2>
+    <div id="register-error" class="error-msg"></div>
+    <div id="register-success" class="success-msg"></div>
+    <form id="register-form">
+      <div class="form-group">
+        <label for="reg-username">Username *</label>
+        <input type="text" id="reg-username" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-email">Email Address *</label>
+        <input type="email" id="reg-email" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-first">First Name *</label>
+        <input type="text" id="reg-first" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-last">Last Name *</label>
+        <input type="text" id="reg-last" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-mi">Middle Initial</label>
+        <input type="text" id="reg-mi" maxlength="1">
+      </div>
+      <div class="form-group">
+        <label for="reg-password">Password *</label>
+        <input type="password" id="reg-password" required>
+      </div>
+      <button type="submit" id="reg-btn" class="btn-submit">Register Account</button>
+    </form>
+    <div class="toggle-links">
+      <p>Already have an account? <a onclick="showView('login-view')">Back to Login</a></p>
+    </div>
+  </div>
+
+  <!-- VIEW 3: FORGOT PASSWORD -->
+  <div id="forgot-view" class="auth-container" style="display: none;">
+    <h2>Reset Password</h2>
+    <div id="forgot-error" class="error-msg"></div>
+    <div id="forgot-success" class="success-msg"></div>
+    <form id="forgot-form">
+      <div class="form-group">
+        <label for="forgot-email">Registered Email</label>
+        <input type="email" id="forgot-email" required>
+      </div>
+      <div class="form-group">
+        <label for="forgot-new-pass">New Password</label>
+        <input type="password" id="forgot-new-pass" required>
+      </div>
+      <button type="submit" class="btn-submit">Update Password</button>
+    </form>
+    <div class="toggle-links">
+      <p><a onclick="showView('login-view')">Back to Login</a></p>
+    </div>
+  </div>
+
+  <!-- VIEW 4: ADMIN DASHBOARD -->
   <div id="admin-view" class="container" style="display: none;">
     <header>
       <h1>CodeQuest Admin Dashboard</h1>
       <button class="btn-logout" onclick="logout()">Logout</button>
     </header>
 
-    <div id="error-box" class="error-msg"></div>
+    <div id="admin-error" class="error-msg"></div>
 
     <div class="stats-card">
       Total Records Found: <strong id="total-count" style="color: #38bdf8;">0</strong>
@@ -97,66 +165,111 @@
     function initApp() {
       const token = localStorage.getItem('token');
       if (token) {
-        showAdminView();
+        showView('admin-view');
         loadAdminDashboard();
       } else {
-        showLoginView();
+        showView('login-view');
       }
     }
 
-    // --- VIEW SWITCHING LOGIC ---
-    function showLoginView() {
-      document.getElementById('login-view').style.display = 'block';
-      document.getElementById('admin-view').style.display = 'none';
+    // Dynamic view switcher
+    function showView(viewId) {
+      ['login-view', 'register-view', 'forgot-view', 'admin-view'].forEach(id => {
+        document.getElementById(id).style.display = id === viewId ? 'block' : 'none';
+      });
+      // Clear alert banners when switching views
+      document.querySelectorAll('.error-msg, .success-msg').forEach(el => el.style.display = 'none');
     }
 
-    function showAdminView() {
-      document.getElementById('login-view').style.display = 'none';
-      document.getElementById('admin-view').style.display = 'block';
-    }
-
-    // --- LOGIN FORM HANDLER ---
+    // --- 1. LOGIN HANDLER ---
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const usernameInput = document.getElementById('username').value;
-      const passwordInput = document.getElementById('password').value;
-      const errorMsg = document.getElementById('login-error');
-
-      errorMsg.style.display = 'none';
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
 
       try {
         const response = await fetch('/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: usernameInput, password: passwordInput })
+          body: JSON.stringify({ username, password })
         });
 
         const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Login failed');
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Login failed');
-        }
-
-        // Store authentication credentials
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        // Switch to admin view and render data
-        showAdminView();
+        showView('admin-view');
         loadAdminDashboard();
       } catch (err) {
-        errorMsg.textContent = err.message;
-        errorMsg.style.display = 'block';
+        showMsg('login-error', err.message);
       }
     });
 
-    // --- ADMIN DASHBOARD LOGIC ---
+    // --- 2. REGISTER HANDLER ---
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('reg-btn');
+      btn.disabled = true;
+      btn.textContent = 'Registering...';
+
+      const reqBody = {
+        username: document.getElementById('reg-username').value,
+        email: document.getElementById('reg-email').value,
+        first_name: document.getElementById('reg-first').value,
+        last_name: document.getElementById('reg-last').value,
+        middle_initial: document.getElementById('reg-mi').value,
+        password: document.getElementById('reg-password').value
+      };
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(reqBody)
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Registration failed');
+
+        showMsg('register-success', data.message);
+        document.getElementById('register-form').reset();
+      } catch (err) {
+        showMsg('register-error', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Register Account';
+      }
+    });
+
+    // --- 3. FORGOT PASSWORD HANDLER ---
+    document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgot-email').value;
+      const new_password = document.getElementById('forgot-new-pass').value;
+
+      try {
+        const response = await fetch('/api/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, new_password })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Password reset failed');
+
+        showMsg('forgot-success', data.message);
+        document.getElementById('forgot-form').reset();
+      } catch (err) {
+        showMsg('forgot-error', err.message);
+      }
+    });
+
+    // --- 4. ADMIN DASHBOARD LOGIC ---
     async function loadAdminDashboard() {
       const token = localStorage.getItem('token');
-      if (!token) {
-        logout();
-        return;
-      }
+      if (!token) { logout(); return; }
 
       try {
         const response = await fetch('/api/admin/user-scores', {
@@ -173,7 +286,7 @@
         const records = await response.json();
         renderTable(records);
       } catch (err) {
-        showError(err.message);
+        showMsg('admin-error', err.message);
       }
     }
 
@@ -224,37 +337,27 @@
         });
 
         const result = await response.json();
-
-        if (!response.ok) {
-          alert(result.error || 'Failed to delete user.');
-          return;
-        }
+        if (!response.ok) throw new Error(result.error || 'Failed to delete user.');
 
         alert(result.message);
         loadAdminDashboard();
       } catch (err) {
-        alert('Server error during deletion.');
+        alert(err.message);
       }
     }
 
-    function showError(message) {
-      const errorBox = document.getElementById('error-box');
-      errorBox.textContent = message;
-      errorBox.style.display = 'block';
-    }
-
-    // --- FULLY FIXED LOGOUT ---
+    // --- UTILITIES & LOGOUT ---
     function logout() {
-      // 1. Wipe out local storage
       localStorage.clear();
       sessionStorage.clear();
+      document.getElementById('login-form').reset();
+      showView('login-view');
+    }
 
-      // 2. Clear input fields
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
-
-      // 3. Switch back to login screen immediately
-      showLoginView();
+    function showMsg(elementId, text) {
+      const el = document.getElementById(elementId);
+      el.textContent = text;
+      el.style.display = 'block';
     }
 
     function escapeHtml(str) {
