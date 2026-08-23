@@ -226,6 +226,7 @@
             <th>Email</th>
             <th>Quiz Name</th>
             <th>Score</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="admin-scores-table">
@@ -405,10 +406,36 @@
           <td>${row.email}</td>
           <td>${row.quiz_name || 'No quiz taken'}</td>
           <td>${row.score !== null ? `${row.score}/${row.max_score}` : '-'}</td>
+          <td>
+            ${row.username !== 'admin' ? `
+              <button class="logout-btn" onclick="deleteUser(${row.user_id}, '${row.username}')">Delete</button>
+            ` : '<span style="color: #8f96a8;">N/A</span>'}
+          </td>
         </tr>
       `).join('');
     } else {
       showAlert(data.error || 'Access denied', 'error');
+    }
+  }
+
+  // DELETE USER FUNCTION
+  async function deleteUser(userId, username) {
+    if (!confirm(`Are you sure you want to delete user "${username}"? This will remove their profile and scores.`)) {
+      return;
+    }
+
+    const res = await fetch(`${API_URL}/admin/users/${userId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      showAlert(data.message, 'success');
+      loadAdminScores();
+    } else {
+      showAlert(data.error || 'Failed to delete user', 'error');
     }
   }
 
