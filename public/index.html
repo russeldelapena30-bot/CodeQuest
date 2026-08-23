@@ -9,7 +9,6 @@
     body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
     .container { max-width: 1100px; margin: 0 auto; }
     
-    /* Card Containers */
     .auth-container { max-width: 450px; margin: 40px auto; background-color: #1e293b; padding: 30px; border-radius: 8px; border: 1px solid #334155; }
     .auth-container h2 { color: #38bdf8; margin-top: 0; text-align: center; }
     .form-group { margin-bottom: 12px; }
@@ -23,7 +22,6 @@
     .toggle-links a { color: #38bdf8; text-decoration: none; font-weight: bold; cursor: pointer; }
     .toggle-links a:hover { text-decoration: underline; }
 
-    /* Admin Dashboard Styles */
     header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155; padding-bottom: 15px; margin-bottom: 20px; }
     h1 { color: #38bdf8; margin: 0; font-size: 24px; }
     .btn-logout { background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -129,8 +127,8 @@
   <!-- VIEW 4: USER DASHBOARD -->
   <div id="user-view" class="auth-container" style="display: none;">
     <h2>Welcome, <span id="user-welcome-name">User</span>!</h2>
-    <p style="text-align: center; color: #94a3b8;">You are logged in successfully.</p>
-    <button class="btn-logout" onclick="logout()" style="width: 100%; margin-top: 20px;">Logout</button>
+    <p style="text-align: center; color: #94a3b8; margin-top: 15px;">You have successfully logged in to CodeQuest.</p>
+    <button class="btn-logout" onclick="logout()" style="width: 100%; margin-top: 25px;">Logout</button>
   </div>
 
   <!-- VIEW 5: ADMIN DASHBOARD -->
@@ -170,21 +168,28 @@
     document.addEventListener('DOMContentLoaded', initApp);
 
     function initApp() {
-      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const userStr = localStorage.getItem('user');
       const token = localStorage.getItem('token');
 
-      if (user && (user.role === 'admin' || token)) {
-        showView('admin-view');
-        loadAdminDashboard();
-      } else if (user) {
-        showView('user-view');
-        displayUserWelcome(user);
-      } else {
+      if (!token || !userStr) {
         showView('login-view');
+        return;
+      }
+
+      try {
+        const user = JSON.parse(userStr);
+        if (user.role === 'admin' || user.username === 'admin') {
+          showView('admin-view');
+          loadAdminDashboard();
+        } else {
+          showView('user-view');
+          displayUserWelcome(user);
+        }
+      } catch (err) {
+        logout();
       }
     }
 
-    // Dynamic view switcher
     function showView(viewId) {
       const views = ['login-view', 'register-view', 'forgot-view', 'user-view', 'admin-view'];
       views.forEach(id => {
@@ -194,7 +199,7 @@
       document.querySelectorAll('.error-msg, .success-msg').forEach(el => el.style.display = 'none');
     }
 
-    // --- 1. LOGIN HANDLER ---
+    // --- LOGIN HANDLER ---
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('login-username').value;
@@ -210,13 +215,13 @@
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Login failed');
 
-        // Save authentication data
+        // Store authentication token & user payload
         if (data.token) localStorage.setItem('token', data.token);
         const userData = data.user || { username: username };
         localStorage.setItem('user', JSON.stringify(userData));
 
-        // Direct based on account type
-        if (data.token || (userData.role && userData.role === 'admin') || username === 'admin') {
+        // Route strictly by role
+        if (userData.role === 'admin' || userData.username === 'admin') {
           showView('admin-view');
           loadAdminDashboard();
         } else {
@@ -229,13 +234,13 @@
     });
 
     function displayUserWelcome(user) {
-      const userWelcomeEl = document.getElementById('user-welcome-name');
-      if (userWelcomeEl) {
-        userWelcomeEl.textContent = user.first_name || user.username || 'User';
+      const nameElem = document.getElementById('user-welcome-name');
+      if (nameElem) {
+        nameElem.textContent = user.first_name || user.username || 'User';
       }
     }
 
-    // --- 2. REGISTER HANDLER ---
+    // --- REGISTER HANDLER ---
     document.getElementById('register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('reg-btn');
@@ -271,7 +276,7 @@
       }
     });
 
-    // --- 3. FORGOT PASSWORD HANDLER ---
+    // --- FORGOT PASSWORD HANDLER ---
     document.getElementById('forgot-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('forgot-email').value;
@@ -294,7 +299,7 @@
       }
     });
 
-    // --- 4. ADMIN DASHBOARD LOGIC ---
+    // --- ADMIN DASHBOARD ---
     async function loadAdminDashboard() {
       const token = localStorage.getItem('token');
       if (!token) { logout(); return; }
@@ -374,9 +379,9 @@
       }
     }
 
-    // --- UTILITIES & LOGOUT ---
     function logout() {
-      localStorage.clear();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       sessionStorage.clear();
       document.getElementById('login-form').reset();
       showView('login-view');
