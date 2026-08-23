@@ -48,10 +48,10 @@ db.serialize(() => {
     )
   `);
 
-  // 3. AUTO-SEED ADMIN ACCOUNT (Saves automatically on startup)
+  // 3. AUTO-SEED ADMIN ACCOUNT
   const adminUsername = 'admin';
   const adminEmail = 'admin@codequest.com';
-  const adminPasswordRaw = 'admin123'; // Default admin password
+  const adminPasswordRaw = 'admin123';
 
   db.get(`SELECT id FROM users WHERE username = ?`, [adminUsername], async (err, row) => {
     if (err) {
@@ -148,7 +148,8 @@ app.post('/api/login', (req, res) => {
         username: user.username,
         first_name: user.first_name,
         last_name: user.last_name,
-        email: user.email
+        email: user.email,
+        role: user.username === 'admin' ? 'admin' : 'user'
       }
     });
   });
@@ -204,7 +205,7 @@ app.post('/api/scores', authenticateToken, (req, res) => {
   });
 });
 
-// --- ADMIN DASHBOARD ENDPOINT ---
+// --- ADMIN DASHBOARD ENDPOINTS ---
 
 // Get All Users & Quiz Scores (Admin Only)
 app.get('/api/admin/user-scores', authenticateToken, (req, res) => {
@@ -231,6 +232,33 @@ app.get('/api/admin/user-scores', authenticateToken, (req, res) => {
   db.all(sql, [], (err, rows) => {
     if (err) return res.status(500).json({ error: 'Failed to retrieve admin records' });
     res.json(rows);
+  });
+});
+
+// Delete User & Associated Scores (Admin Only)
+app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
+  if (req.user.username !== 'admin') {
+    return res.status(403).json({ error: 'Access denied. Admin access required.' });
+  }
+
+  const userId = req.params.id;
+
+  // Prevent admin from deleting themselves
+  db.get(`SELECT username FROM users WHERE id = ?`, [userId], (err, user) => {
+    if (err || !user) return res.status(404).json({ error: 'User not found' });
+    if (user.username === 'admin') {
+      return res.status(400).json({ error: 'The primary admin account cannot be deleted.' });
+    }
+
+    // Delete user's scores first, then delete user
+    db.run(`DELETE FROM scores WHERE user_id = ?`, [userId], (err) => {
+      if (err) return res.status(500).json({ error: 'Failed to delete user scores' });
+
+      db.run(`DELETE FROM users WHERE id = ?`, [userId], (err) => {
+        if (err) return res.status(500).json({ error: 'Failed to delete user' });
+        res.json({ message: 'User deleted successfully' });
+      });
+    });
   });
 });
 
