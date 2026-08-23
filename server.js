@@ -1,265 +1,282 @@
-const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const cors = require('cors');
-const path = require('path');
+document.addEventListener('DOMContentLoaded', () => {
+  // DOM Elements
+  const authModal = document.getElementById('auth-modal');
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  const forgotForm = document.getElementById('forgot-form');
 
-const app = express();
-const PORT = 3000;
-const JWT_SECRET = 'your_super_secret_jwt_key_change_in_production';
+  const showRegisterLink = document.getElementById('show-register');
+  const showLoginLink = document.getElementById('show-login');
+  const showForgotLink = document.getElementById('show-forgot');
+  const backToLoginLink = document.getElementById('back-to-login');
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+  const navAuthBtn = document.getElementById('nav-auth-btn');
+  const userProfileNav = document.getElementById('user-profile-nav');
+  const userNameSpan = document.getElementById('user-name-span');
+  const logoutBtn = document.getElementById('logout-btn');
 
-// Ensure SQLite uses a permanent, absolute path in your project directory
-const dbPath = path.resolve(__dirname, 'codequest.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) console.error('Database connection error:', err);
-  else console.log(`Connected to SQLite database at: ${dbPath}`);
-});
+  const adminDashboard = document.getElementById('admin-dashboard');
+  const mainContent = document.getElementById('main-content'); // Main section with topics/quizzes
 
-// Initialize Database Tables and Auto-Seed Admin Account
-db.serialize(() => {
-  // 1. Create Users Table
-  db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      first_name TEXT NOT NULL,
-      last_name TEXT NOT NULL,
-      middle_initial TEXT
-    )
-  `);
+  // Initialize App State
+  checkAuthState();
 
-  // 2. Create Scores Table
-  db.run(`
-    CREATE TABLE IF NOT EXISTS scores (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      quiz_name TEXT NOT NULL,
-      score INTEGER NOT NULL,
-      max_score INTEGER NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users (id)
-    )
-  `);
+  // --- Modal Navigation ---
+  if (showRegisterLink) {
+    showRegisterLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginForm.classList.add('hidden');
+      registerForm.classList.remove('hidden');
+    });
+  }
 
-  // 3. AUTO-SEED ADMIN ACCOUNT
-  const adminUsername = 'admin';
-  const adminEmail = 'admin@codequest.com';
-  const adminPasswordRaw = 'admin123';
+  if (showLoginLink) {
+    showLoginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      registerForm.classList.add('hidden');
+      loginForm.classList.remove('hidden');
+    });
+  }
 
-  db.get(`SELECT id FROM users WHERE username = ?`, [adminUsername], async (err, row) => {
-    if (err) {
-      console.error('Error checking for admin account:', err);
-      return;
-    }
-    if (!row) {
+  if (showForgotLink) {
+    showForgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginForm.classList.add('hidden');
+      forgotForm.classList.remove('hidden');
+    });
+  }
+
+  if (backToLoginLink) {
+    backToLoginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      forgotForm.classList.add('hidden');
+      loginForm.classList.remove('hidden');
+    });
+  }
+
+  if (navAuthBtn) {
+    navAuthBtn.addEventListener('click', () => {
+      authModal.classList.remove('hidden');
+    });
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+  }
+
+  // --- Auth Handlers ---
+
+  // LOGIN
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usernameInput = document.getElementById('login-username').value;
+      const passwordInput = document.getElementById('login-password').value;
+
       try {
-        const hashedPassword = await bcrypt.hash(adminPasswordRaw, 10);
-        const seedSql = `
-          INSERT INTO users (username, password, email, first_name, last_name, middle_initial)
-          VALUES (?, ?, ?, ?, ?, ?)
-        `;
-        db.run(seedSql, [adminUsername, hashedPassword, adminEmail, 'Admin', 'User', 'System'], function (seedErr) {
-          if (seedErr) console.error('Failed to auto-seed admin user:', seedErr);
-          else console.log(`SUCCESS: Admin account initialized (Username: '${adminUsername}', Password: '${adminPasswordRaw}')`);
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: usernameInput, password: passwordInput })
         });
-      } catch (hashErr) {
-        console.error('Error hashing admin password:', hashErr);
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('codequest_token', data.token);
+          localStorage.setItem('codequest_user', JSON.stringify(data.user));
+          
+          alert(`Welcome back, ${data.user.first_name}!`);
+          authModal.classList.add('hidden');
+          loginForm.reset();
+          
+          checkAuthState();
+        } else {
+          alert(data.error || 'Login failed');
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        alert('Server error during login.');
+      }
+    });
+  }
+
+  // REGISTER
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        username: document.getElementById('reg-username').value,
+        email: document.getElementById('reg-email').value,
+        first_name: document.getElementById('reg-fname').value,
+        last_name: document.getElementById('reg-lname').value,
+        middle_initial: document.getElementById('reg-mi').value,
+        password: document.getElementById('reg-password').value
+      };
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Registration successful! Please log in.');
+          registerForm.reset();
+          registerForm.classList.add('hidden');
+          loginForm.classList.remove('hidden');
+        } else {
+          alert(data.error || 'Registration failed');
+        }
+      } catch (err) {
+        console.error('Register error:', err);
+        alert('Server error during registration.');
+      }
+    });
+  }
+
+  // FORGOT PASSWORD
+  if (forgotForm) {
+    forgotForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('forgot-email').value;
+      const new_password = document.getElementById('forgot-new-password').value;
+
+      try {
+        const response = await fetch('/api/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, new_password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Password updated! You can now log in.');
+          forgotForm.reset();
+          forgotForm.classList.add('hidden');
+          loginForm.classList.remove('hidden');
+        } else {
+          alert(data.error || 'Failed to reset password');
+        }
+      } catch (err) {
+        console.error('Forgot password error:', err);
+        alert('Server error during password reset.');
+      }
+    });
+  }
+
+  // --- AUTH STATE CHECKER ---
+  function checkAuthState() {
+    const user = JSON.parse(localStorage.getItem('codequest_user'));
+    const token = localStorage.getItem('codequest_token');
+
+    if (token && user) {
+      // Hide login modal
+      if (authModal) authModal.classList.add('hidden');
+
+      // Update Nav Bar UI
+      if (navAuthBtn) navAuthBtn.classList.add('hidden');
+      if (userProfileNav) userProfileNav.classList.remove('hidden');
+      if (userNameSpan) userNameSpan.textContent = user.first_name;
+
+      // Handle View Routing based on role
+      if (user.role === 'admin') {
+        if (mainContent) mainContent.classList.add('hidden');
+        if (adminDashboard) {
+          adminDashboard.classList.remove('hidden');
+          loadAdminData();
+        }
+      } else {
+        // REGULAR USER: Reveal topics/quizzes, hide admin dashboard
+        if (adminDashboard) adminDashboard.classList.add('hidden');
+        if (mainContent) mainContent.classList.remove('hidden');
       }
     } else {
-      console.log("Admin account is saved and ready.");
+      // LOGGED OUT STATE
+      if (navAuthBtn) navAuthBtn.classList.remove('hidden');
+      if (userProfileNav) userProfileNav.classList.add('hidden');
+      if (adminDashboard) adminDashboard.classList.add('hidden');
+      if (mainContent) mainContent.classList.remove('hidden'); // Default main layout view
     }
-  });
-});
-
-// Middleware to protect routes
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Access token required' });
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Invalid or expired token' });
-    req.user = user;
-    next();
-  });
-};
-
-// --- AUTHENTICATION ENDPOINTS ---
-
-// Register New User
-app.post('/api/register', async (req, res) => {
-  const { username, password, email, first_name, last_name, middle_initial } = req.body;
-
-  if (!username || !password || !email || !first_name || !last_name) {
-    return res.status(400).json({ error: 'Please fill in all required fields' });
   }
 
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const sql = `INSERT INTO users (username, password, email, first_name, last_name, middle_initial) VALUES (?, ?, ?, ?, ?, ?)`;
-    
-    db.run(sql, [username, hashedPassword, email, first_name, last_name, middle_initial || ''], function (err) {
-      if (err) {
-        if (err.message.includes('UNIQUE constraint failed')) {
-          return res.status(400).json({ error: 'Username or Email already exists' });
-        }
-        return res.status(500).json({ error: 'Failed to register user' });
-      }
-      res.status(201).json({ message: 'Registration successful! You can now log in.' });
-    });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error during registration' });
-  }
-});
-
-// Login User (FIXED: Added role property to response)
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required' });
+  function handleLogout() {
+    localStorage.removeItem('codequest_token');
+    localStorage.removeItem('codequest_user');
+    checkAuthState();
+    window.location.reload();
   }
 
-  db.get(`SELECT * FROM users WHERE username = ?`, [username], async (err, user) => {
-    if (err) return res.status(500).json({ error: 'Database query error' });
-    if (!user) return res.status(400).json({ error: 'Invalid username or password' });
+  // --- ADMIN DATA FETCHING ---
+  async function loadAdminData() {
+    const token = localStorage.getItem('codequest_token');
+    const tableBody = document.getElementById('admin-table-body');
 
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) return res.status(400).json({ error: 'Invalid username or password' });
-
-    const token = jwt.sign(
-      { id: user.id, username: user.username, first_name: user.first_name },
-      JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        role: user.username === 'admin' ? 'admin' : 'user'
-      }
-    });
-  });
-});
-
-// Forgot Password
-app.post('/api/forgot-password', async (req, res) => {
-  const { email, new_password } = req.body;
-
-  if (!email || !new_password) {
-    return res.status(400).json({ error: 'Email and new password are required' });
-  }
-
-  db.get(`SELECT id FROM users WHERE email = ?`, [email], async (err, user) => {
-    if (err) return res.status(500).json({ error: 'Database query error' });
-    if (!user) return res.status(404).json({ error: 'No account found with this email' });
+    if (!tableBody) return;
 
     try {
-      const hashedPassword = await bcrypt.hash(new_password, 10);
-      db.run(`UPDATE users SET password = ? WHERE email = ?`, [hashedPassword, email], function (err) {
-        if (err) return res.status(500).json({ error: 'Failed to reset password' });
-        res.json({ message: 'Password reset successful! You can now log in.' });
+      const response = await fetch('/api/admin/user-scores', {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        tableBody.innerHTML = '';
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${row.user_id}</td>
+            <td>${row.first_name} ${row.last_name} (@${row.username})</td>
+            <td>${row.email}</td>
+            <td>${row.quiz_name || 'N/A'}</td>
+            <td>${row.score !== null ? `${row.score} / ${row.max_score}` : 'Not attempted'}</td>
+            <td>
+              ${row.username !== 'admin' ? `<button class="delete-user-btn" data-id="${row.user_id}">Delete User</button>` : '<em>Protected</em>'}
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+
+        // Attach Delete Listeners
+        document.querySelectorAll('.delete-user-btn').forEach(button => {
+          button.addEventListener('click', handleDeleteUser);
+        });
+      } else {
+        alert(data.error || 'Failed to load admin dashboard.');
+      }
     } catch (err) {
-      res.status(500).json({ error: 'Server error processing password reset' });
+      console.error('Admin fetch error:', err);
     }
-  });
-});
-
-// Verify Current Token / Get Active Profile
-app.get('/api/me', authenticateToken, (req, res) => {
-  db.get(`SELECT id, username, email, first_name, last_name FROM users WHERE id = ?`, [req.user.id], (err, user) => {
-    if (err || !user) return res.status(404).json({ error: 'User not found' });
-    res.json(user);
-  });
-});
-
-// --- SCORES ENDPOINT ---
-
-// Submit Quiz Score
-app.post('/api/scores', authenticateToken, (req, res) => {
-  const { quiz_name, score, max_score } = req.body;
-  const user_id = req.user.id;
-
-  if (!quiz_name || score === undefined || !max_score) {
-    return res.status(400).json({ error: 'Missing required score fields' });
   }
 
-  const sql = `INSERT INTO scores (user_id, quiz_name, score, max_score) VALUES (?, ?, ?, ?)`;
-  db.run(sql, [user_id, quiz_name, score, max_score], function (err) {
-    if (err) return res.status(500).json({ error: 'Failed to record score' });
-    res.status(201).json({ message: 'Score saved to database!', scoreId: this.lastID });
-  });
-});
+  async function handleDeleteUser(e) {
+    const userId = e.target.getAttribute('data-id');
+    if (!confirm(`Are you sure you want to delete user ID #${userId}?`)) return;
 
-// --- ADMIN DASHBOARD ENDPOINTS ---
+    const token = localStorage.getItem('codequest_token');
 
-// Get All Users & Quiz Scores (Admin Only)
-app.get('/api/admin/user-scores', authenticateToken, (req, res) => {
-  if (req.user.username !== 'admin') {
-    return res.status(403).json({ error: 'Access denied. Admin access required.' });
-  }
-
-  const sql = `
-    SELECT 
-      u.id AS user_id,
-      u.username,
-      u.first_name,
-      u.last_name,
-      u.email,
-      s.quiz_name,
-      s.score,
-      s.max_score,
-      s.created_at
-    FROM users u
-    LEFT JOIN scores s ON u.id = s.user_id
-    ORDER BY u.id ASC, s.created_at DESC
-  `;
-
-  db.all(sql, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: 'Failed to retrieve admin records' });
-    res.json(rows);
-  });
-});
-
-// DELETE ROUTE (NEW: Deletes user & scores)
-app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
-  if (req.user.username !== 'admin') {
-    return res.status(403).json({ error: 'Access denied. Admin access required.' });
-  }
-
-  const userId = req.params.id;
-
-  db.get(`SELECT username FROM users WHERE id = ?`, [userId], (err, user) => {
-    if (err || !user) return res.status(404).json({ error: 'User not found' });
-    if (user.username === 'admin') {
-      return res.status(400).json({ error: 'The primary admin account cannot be deleted.' });
-    }
-
-    db.run(`DELETE FROM scores WHERE user_id = ?`, [userId], (err) => {
-      if (err) return res.status(500).json({ error: 'Failed to delete user scores' });
-
-      db.run(`DELETE FROM users WHERE id = ?`, [userId], (err) => {
-        if (err) return res.status(500).json({ error: 'Failed to delete user' });
-        res.json({ message: 'User deleted successfully' });
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
       });
-    });
-  });
-});
 
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('User deleted.');
+        loadAdminData(); // Refresh table
+      } else {
+        alert(data.error || 'Failed to delete user.');
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Server error deleting user.');
+    }
+  }
 });
