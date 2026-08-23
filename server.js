@@ -119,7 +119,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Login User
+// Login User (FIXED: Added role property to response)
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -235,7 +235,7 @@ app.get('/api/admin/user-scores', authenticateToken, (req, res) => {
   });
 });
 
-// Delete User & Associated Scores (Admin Only)
+// DELETE ROUTE (NEW: Deletes user & scores)
 app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
   if (req.user.username !== 'admin') {
     return res.status(403).json({ error: 'Access denied. Admin access required.' });
@@ -243,14 +243,12 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
 
   const userId = req.params.id;
 
-  // Prevent admin from deleting themselves
   db.get(`SELECT username FROM users WHERE id = ?`, [userId], (err, user) => {
     if (err || !user) return res.status(404).json({ error: 'User not found' });
     if (user.username === 'admin') {
       return res.status(400).json({ error: 'The primary admin account cannot be deleted.' });
     }
 
-    // Delete user's scores first, then delete user
     db.run(`DELETE FROM scores WHERE user_id = ?`, [userId], (err) => {
       if (err) return res.status(500).json({ error: 'Failed to delete user scores' });
 
