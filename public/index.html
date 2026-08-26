@@ -41,6 +41,9 @@
     .auth-toggle { margin-top: 15px; font-size: 0.9em; text-align: center; color: #8f96a8; }
     .auth-toggle a { color: #f2a65a; text-decoration: underline; cursor: pointer; }
 
+    .show-password-container { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 0.85em; color: #8f96a8; cursor: pointer; }
+    .show-password-container input { cursor: pointer; }
+
     .message { padding: 12px; margin-bottom: 20px; border-radius: 6px; display: none; font-weight: bold; }
     .success { background-color: #20372f; color: #6fe3b4; border: 1px solid #6fe3b4; }
     .error { background-color: #3a2325; color: #f2777a; border: 1px solid #f2777a; }
@@ -110,6 +113,9 @@
         <div class="form-group" style="margin-bottom: 20px;">
           <label>Password</label>
           <input type="password" id="login-password" required>
+          <label class="show-password-container">
+            <input type="checkbox" onclick="togglePasswordVisibility('login-password')"> Show Password
+          </label>
         </div>
         <button type="submit" style="width: 100%;">Login</button>
         <div class="auth-toggle">
@@ -128,6 +134,9 @@
           <div class="form-group">
             <label>Password *</label>
             <input type="password" id="reg-password" required>
+            <label class="show-password-container">
+              <input type="checkbox" onclick="togglePasswordVisibility('reg-password')"> Show Password
+            </label>
           </div>
           <div class="form-group">
             <label>Email *</label>
@@ -162,6 +171,9 @@
         <div class="form-group" style="margin-bottom: 20px;">
           <label>New Password</label>
           <input type="password" id="forgot-new-password" required>
+          <label class="show-password-container">
+            <input type="checkbox" onclick="togglePasswordVisibility('forgot-new-password')"> Show Password
+          </label>
         </div>
         <button type="submit" style="width: 100%;">Reset Password</button>
         <div class="auth-toggle">
@@ -241,6 +253,15 @@
   const API_URL = '/api';
   let currentUser = JSON.parse(localStorage.getItem('cq_user')) || null;
   let authToken = localStorage.getItem('cq_token') || null;
+
+  function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+      input.type = "text";
+    } else {
+      input.type = "password";
+    }
+  }
 
   function updateNav() {
     const badgeArea = document.getElementById('user-badge-area');
@@ -447,9 +468,9 @@
       node: '01', 
       blurb: 'Describes how algorithmic performance scales with input size (N).', 
       lesson: [
-        { h: 'What Big-O actually measures', b: `Big-O describes how the runtime (or memory) of an algorithm grows as the input size n grows — not the exact number of seconds it takes. Two algorithms can both run in 2ms on your laptop today and behave completely differently once n gets into the millions.` },
-        { h: 'The orders you will see constantly', b: `From best to worst for large n: O(1) constant, O(log n) logarithmic, O(n) linear, O(n log n) linearithmic, O(n²) quadratic. A single loop over an array is O(n). A loop inside a loop, each running n times, is O(n²).` },
-        { h: 'Example:', b: `Big-O describes how the runtime (or memory) of an algorithm grows as the input size n grows — not the exact number of seconds it takes.` }
+        { h: 'What Big-O actually measures', b: 'Big-O describes how the runtime (or memory) of an algorithm grows as the input size n grows — not the exact number of seconds it takes. Two algorithms can both run in 2ms on your laptop today and behave completely differently once n gets into the millions.' },
+        { h: 'The orders you\'ll see constantly', b: 'From best to worst for large n: O(1) constant, O(log n) logarithmic, O(n) linear, O(n log n) linearithmic, O(n²) quadratic. A single loop over an array is O(n). A loop inside a loop, each running n times, is O(n²).' },
+        { h: 'Example:', b: 'Big-O describes how the runtime (or memory) of an algorithm grows as the input size n grows — not the exact number of seconds it takes.' }
       ],
       quiz: [
         { q: "What is the time complexity of accessing an element in an array directly by index?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
@@ -470,10 +491,10 @@
       node: '02', 
       blurb: 'Contiguous memory blocks enabling fast indexed access.', 
       lesson: [
-        { h: 'Contiguous memory, direct access', b: `An array stores its elements back-to-back in memory. Because the computer knows the starting address and the size of each element, it can jump straight to index i with simple arithmetic — no searching required. That is why arr[i] is O(1).` },
-        { h: 'Insertion and deletion cost', b: `Adding or removing an element in the middle (or front) means every element after it has to physically shift over to keep things contiguous. That shifting is what makes insert-at-front O(n), even though reading is O(1).` },
-        { h: 'Example:', b: `arr = [3, 8, 1]\narr.unshift(9)` },
-        { h: 'Fixed vs. dynamic arrays', b: `Low-level arrays have a fixed capacity set at creation. Dynamic arrays grow automatically: once they run out of room, they allocate a bigger block and copy everything over.` }
+        { h: 'Contiguous memory, direct access', b: 'An array stores its elements back-to-back in memory. Because the computer knows the starting address and the size of each element, it can jump straight to index i with simple arithmetic — no searching required. That\'s why arr[i] is O(1).' },
+        { h: 'Insertion and deletion cost more than you\'d think', b: 'Adding or removing an element in the middle (or front) means every element after it has to physically shift over to keep things contiguous. That shifting is what makes insert-at-front O(n), even though reading is O(1).' },
+        { h: 'Example:', b: 'arr = [3, 8, 1]\narr.unshift(9)' },
+        { h: 'Fixed vs. dynamic arrays', b: 'Low-level arrays have a fixed capacity set at creation. The dynamic arrays you use in Python (list) or JavaScript (Array) grow automatically: once they run out of room, they allocate a bigger block and copy everything over — an occasional O(n) cost that averages out over many appends.' }
       ],
       quiz: [
         { q: "Why is inserting an element at index 0 of an array an O(N) operation?", options: ["Array size is fixed", "Existing elements must shift forward in memory", "Hash collision resolution", "Requires tree rebalancing"], answer: 1 },
