@@ -508,8 +508,14 @@
       node: '01', 
       blurb: 'Describes how algorithmic performance scales with input size (N).', 
       lesson: [
-        { h: 'Time Complexity', b: 'O(1) Constant, O(log N) Logarithmic, O(N) Linear, O(N²) Quadratic.' },
-        { h: 'Space Complexity', b: 'Measures how much memory an algorithm requires relative to input size.' }
+        { h: 'What Big-O actually measures', b: 'Big-O describes how the runtime (or memory) of an algorithm grows as the input size n grows — not the exact number of seconds it takes. Two algorithms can both run in 2ms on your laptop today and behave completely differently once n gets into the millions.' },
+        { h: 'The orders you'll see constantly', b: 'From best to worst for large n: O(1) constant, O(log n) logarithmic, O(n) linear, O(n log n) linearithmic, O(n²) quadratic. A single loop over an array is O(n). A loop inside a loop, each running n times, is O(n²).' }
+        { h: 'Example:', b: '
+for (let i = 0; i < n; i++) { ... }
+for (let i = 0; i < n; i++) {
+for (let j = 0; j < n; j++) { ... }
+}' }
+        { h: 'Why it matters', b: 'Big-O lets you predict how code will behave before it becomes slow in production. An O(n²) sort feels fine on 50 items and grinds to a halt on 500,000.' }
       ],
       quiz: [
         { q: "What is the time complexity of accessing an element in an array directly by index?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
