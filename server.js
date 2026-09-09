@@ -20,9 +20,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
   else console.log(`Connected to SQLite database at: ${dbPath}`);
 });
 
-// Initialize Database Tables and Auto-Seed Admin Account
+// Initialize Database Tables and Auto-Seed Admin Account (Safe: uses IF NOT EXISTS)
 db.serialize(() => {
-  // 1. Create Users Table
+  // 1. Create Users Table safely (preserves existing data)
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,7 +35,7 @@ db.serialize(() => {
     )
   `);
 
-  // 2. Create Scores Table
+  // 2. Create Scores Table safely (preserves existing data)
   db.run(`
     CREATE TABLE IF NOT EXISTS scores (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,10 +48,10 @@ db.serialize(() => {
     )
   `);
 
-  // 3. AUTO-SEED ADMIN ACCOUNT (Saves automatically on startup)
+  // 3. AUTO-SEED ADMIN ACCOUNT (Only runs if admin doesn't exist yet)
   const adminUsername = 'admin';
   const adminEmail = 'admin@codequest.com';
-  const adminPasswordRaw = 'admin123'; // Default admin password
+  const adminPasswordRaw = 'admin123';
 
   db.get(`SELECT id FROM users WHERE username = ?`, [adminUsername], async (err, row) => {
     if (err) {
@@ -180,10 +180,57 @@ app.post('/api/forgot-password', async (req, res) => {
 
 // Verify Current Token / Get Active Profile
 app.get('/api/me', authenticateToken, (req, res) => {
-  db.get(`SELECT id, username, email, first_name, last_name FROM users WHERE id = ?`, [req.user.id], (err, user) => {
+  db.get(`SELECT id, username, email, first_name, last_name, middle_initial FROM users WHERE id = ?`, [req.user.id], (err, user) => {
     if (err || !user) return res.status(404).json({ error: 'User not found' });
     res.json(user);
   });
+});
+
+// --- NEW: UPDATE USER PROFILE ENDPOINT ---
+app.put('/api/users/update', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const { first_name, last_name, middle_initial, email, password } = req.body;
+
+  if (!first_name || !last_name || !email) {
+    return res.status(400).json({ error: 'First name, last name, and email are required' });
+  }
+
+  try {
+    if (password && password.trim() !== '') {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const sql = `
+        UPDATE users 
+        SET first_name = ?, last_name = ?, middle_initial = ?, email = ?, password = ?
+        WHERE id = ?
+      `;
+      db.run(sql, [first_name, last_name, middle_initial || '', email, hashedPassword, userId], function (err) {
+        if (err) {
+          if (err.message.includes('UNIQUE constraint failed')) {
+            return res.status(400).json({ error: 'Email already in use by another account' });
+          }
+          return res.status(500).json({ error: 'Failed to update profile' });
+        }
+        res.json({ message: 'Profile and password updated permanently!' });
+      });
+    } else {
+      const sql = `
+        UPDATE users 
+        SET first_name = ?, last_name = ?, middle_initial = ?, email = ?
+        WHERE id = ?
+      `;
+      db.run(sql, [first_name, last_name, middle_initial || '', email, userId], function (err) {
+        if (err) {
+          if (err.message.includes('UNIQUE constraint failed')) {
+            return res.status(400).json({ error: 'Email already in use by another account' });
+          }
+          return res.status(500).json({ error: 'Failed to update profile' });
+        }
+        res.json({ message: 'Profile updated permanently!' });
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Server error during profile update' });
+  }
 });
 
 // --- SCORES ENDPOINT ---
@@ -219,6 +266,7 @@ app.get('/api/admin/user-scores', authenticateToken, (req, res) => {
       u.first_name,
       u.last_name,
       u.email,
+      u.middle_initial,
       s.quiz_name,
       s.score,
       s.max_score,
@@ -237,13 +285,14 @@ app.get('/api/admin/user-scores', authenticateToken, (req, res) => {
 // Delete User and their Scores (Admin Only)
 app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
   if (req.user.username !== 'admin') {
-    return res.status(403).json({ error: 'Access denied. Admin access required.' });
+    return res.status(403).json({ error: 'Access persistence denied.' });
   }
 
   const userId = req.params.id;
 
   if (parseInt(userId) === req.user.id) {
-    return res.status(400).json({ error: 'Cannot delete the admin account.' });
+    this_is_safeguard = true;
+    return res.status(400).json({ error: 'Cannot delete the main admin account.' });
   }
 
   db.run(`DELETE FROM scores WHERE user_id = ?`, [userId], (err) => {
@@ -253,7 +302,7 @@ app.delete('/api/admin/users/:id', authenticateToken, (req, res) => {
       if (err) return res.status(500).json({ error: 'Failed to delete user.' });
       if (this.changes === 0) return res.status(404).json({ error: 'User not found.' });
 
-      res.json({ message: 'User deleted successfully.' });
+      res.json({ message: 'User permanently deleted.' });
     });
   });
 });
