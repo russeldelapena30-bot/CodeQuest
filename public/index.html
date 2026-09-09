@@ -500,16 +500,26 @@
     }
   }
 
-  // 8 DSA TOPICS WITH 10 TAILORED QUIZ QUESTIONS EACH (80 TOTAL)
+  // 8 DSA TOPICS WITH DETAILED LESSONS & 10 TAILORED QUIZ QUESTIONS EACH (80 TOTAL)
   const TOPICS = [
     { 
       id: 'bigo', 
       title: 'Big-O Notation', 
       node: '01', 
-      blurb: 'Describes how algorithmic performance scales with input size (N).', 
+      blurb: 'Mathematical framework describing how algorithmic performance scales with input size (N).', 
       lesson: [
-        { h: 'Time Complexity', b: 'O(1) Constant, O(log N) Logarithmic, O(N) Linear, O(N²) Quadratic.' },
-        { h: 'Space Complexity', b: 'Measures how much memory an algorithm requires relative to input size.' }
+        { 
+          h: 'Asymptotic Analysis & Growth Rates', 
+          b: 'Big-O analysis evaluates an algorithm\'s efficiency independently of hardware fluctuations by focusing on the dominant growth term as input size (N) approaches infinity. It classifies performance into distinct tiers ranging from O(1) constant time to O(N!) factorial growth.' 
+        },
+        { 
+          h: 'Time Complexity Tiers', 
+          b: 'Constant O(1) operations execute instantly regardless of data size (e.g., hash lookups). Logarithmic O(log N) splits problems in half each step (e.g., Binary Search). Linear O(N) scales proportionally with single-pass scans, while Quadratic O(N²) involves nested loops checking elements against each other.' 
+        },
+        { 
+          h: 'Space Complexity & Memory Overhead', 
+          b: 'Space complexity measures the total temporary memory (auxiliary space plus input storage) required during execution. Algorithms that utilize recursive call stacks or allocate auxiliary matrices consume additional memory proportional to input scale.' 
+        }
       ],
       quiz: [
         { q: "What is the time complexity of accessing an element in an array directly by index?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
@@ -528,10 +538,20 @@
       id: 'arrays', 
       title: 'Arrays & Strings', 
       node: '02', 
-      blurb: 'Contiguous memory blocks enabling fast indexed access.', 
+      blurb: 'Contiguous memory blocks enabling instant indexed lookups and sequential access.', 
       lesson: [
-        { h: 'Lookups', b: 'Direct pointer arithmetic allows instant O(1) index access.' },
-        { h: 'Insertions & Deletions', b: 'Requires shifting elements, resulting in O(N) worst-case speed.' }
+        { 
+          h: 'Contiguous Memory Architecture', 
+          b: 'Arrays store data items in adjacent memory locations. Using base memory addresses combined with element size arithmetic, compilers compute exact physical locations instantly, giving arrays O(1) random access lookup performance.' 
+        },
+        { 
+          h: 'Dynamic Resizing & Amortization', 
+          b: 'Static arrays feature fixed capacities. Dynamic arrays (such as ArrayLists or vectors) solve this by allocating larger memory blocks and copying existing elements over whenever capacity is breached, achieving amortized O(1) appends.' 
+        },
+        { 
+          h: 'String Manipulation & Pointer Techniques', 
+          b: 'Strings are implemented under the hood as character arrays. Advanced patterns like the Two-Pointer technique leverage inward-moving index markers from both ends to solve substring and palindrome problems efficiently.' 
+        }
       ],
       quiz: [
         { q: "Why is inserting an element at index 0 of an array an O(N) operation?", options: ["Array size is fixed", "Existing elements must shift forward in memory", "Hash collision resolution", "Requires tree rebalancing"], answer: 1 },
@@ -550,10 +570,20 @@
       id: 'linkedlist', 
       title: 'Linked Lists', 
       node: '03', 
-      blurb: 'Linear sequence of nodes linked via memory pointers.', 
+      blurb: 'Linear sequence of discrete nodes linked dynamically via memory pointers.', 
       lesson: [
-        { h: 'Singly vs Doubly Linked', b: 'Singly links next node; Doubly links both prev and next.' },
-        { h: 'Efficiency', b: 'O(1) node insertion at known positions, O(N) linear search.' }
+        { 
+          h: 'Node Structure & Pointers', 
+          b: 'Unlike arrays, linked lists do not require contiguous memory[cite: 2]. Each node contains a data payload and reference pointers (`next` in singly linked lists; `prev` and `next` in doubly linked lists) pointing to adjacent nodes.' 
+        },
+        { 
+          h: 'Insertion & Deletion Flexibility', 
+          b: 'Inserting or removing items at known node locations requires simple pointer updates rather than shifting entire data blocks, allowing O(1) modifications at the head or tail when references are maintained.' 
+        },
+        { 
+          h: 'Traversal Constraints', 
+          b: 'Linked lists sacrifice random access indexing. Finding an element requires traversing nodes sequentially from the head pointer, resulting in O(N) linear search performance.' 
+        }
       ],
       quiz: [
         { q: "What addition does a Doubly Linked List node have compared to a Singly Linked List node?", options: ["Data payload", "Pointer to next node", "Pointer to previous node", "Root index pointer"], answer: 2 },
@@ -572,9 +602,20 @@
       id: 'stacks', 
       title: 'Stacks (LIFO)', 
       node: '04', 
-      blurb: 'Last-In, First-Out sequence used in call stacks & undo features.', 
+      blurb: 'Last-In, First-Out sequence handling nested operations, expressions, and call management.', 
       lesson: [
-        { h: 'Core Operations', b: 'Push (insert top) and Pop (remove top) both operate in O(1) time.' }
+        { 
+          h: 'Core LIFO Operations', 
+          b: 'Stacks enforce strict Last-In, First-Out ordering. The `Push` operation adds an item to the top, while `Pop` removes the top element. Both execute in O(1) constant time.' 
+        },
+        { 
+          h: 'Execution Call Stacks & Recursion', 
+          b: 'Programming environments maintain execution frames on a call stack to track nested function calls, local variables, and return addresses. Exceeding stack bounds triggers a Stack Overflow error.' 
+        },
+        { 
+          h: 'Practical Applications', 
+          b: 'Stacks power core programming utilities including text editor undo/redo functionality, syntax bracket matching checkers, and expression parsing (such as infix to postfix conversion).' 
+        }
       ],
       quiz: [
         { q: "Which access rule describes a Stack data structure?", options: ["First-In, First-Out (FIFO)", "Last-In, First-Out (LIFO)", "Random Access", "Sorted Access"], answer: 1 },
@@ -593,9 +634,20 @@
       id: 'queues', 
       title: 'Queues (FIFO)', 
       node: '05', 
-      blurb: 'First-In, First-Out model used for task scheduling & buffers.', 
+      blurb: 'First-In, First-Out model organizing sequential task execution and buffers.', 
       lesson: [
-        { h: 'Core Operations', b: 'Enqueue (add back) and Dequeue (remove front) run in O(1) time.' }
+        { 
+          h: 'Core FIFO Mechanics', 
+          b: 'Queues maintain strict First-In, First-Out sequencing. Items enter at the back via `Enqueue` and are processed/removed from the front via `Dequeue`, executing in O(1) time.' 
+        },
+        { 
+          h: 'Circular Buffer Implementation', 
+          b: 'Array-backed queues utilize circular wrapping via modulo arithmetic to reuse empty slots efficiently without shifting underlying memory arrays on every dequeue.' 
+        },
+        { 
+          h: 'System Buffering & Graph Search', 
+          b: 'Queues manage asynchronous task requests in web servers and print buffers. They also serve as the foundational driver behind Breadth-First Search (BFS) graph traversal algorithms.' 
+        }
       ],
       quiz: [
         { q: "In a standard Queue, where are new items inserted?", options: ["Front", "Rear / Back", "Middle", "Random Index"], answer: 1 },
@@ -614,10 +666,20 @@
       id: 'hashtables', 
       title: 'Hash Tables', 
       node: '06', 
-      blurb: 'Key-value maps powered by a hash function for rapid retrieval.', 
+      blurb: 'Key-value mapping structures driven by hash functions for rapid retrieval.', 
       lesson: [
-        { h: 'Performance', b: 'Offers O(1) average lookup, insertion, and deletion.' },
-        { h: 'Collisions', b: 'Handled via Chaining (linked list buckets) or Open Addressing.' }
+        { 
+          h: 'Hash Functions & Indexing', 
+          b: 'Hash tables convert arbitrary keys into fixed numeric hash codes using specialized hash functions, mapping them directly to internal array storage buckets to achieve O(1) average lookups[cite: 2].' 
+        },
+        { 
+          h: 'Collision Resolution Strategies', 
+          b: 'When distinct keys hash to the same bucket index, collisions occur. Systems resolve this via Separate Chaining (storing linked lists in buckets) or Open Addressing (probing adjacent slots)[cite: 2].' 
+        },
+        { 
+          h: 'Load Factor & Rehashing', 
+          b: 'The load factor measures storage capacity utilization. When occupancy crosses established thresholds, the table undergoes rehashing—expanding capacity and redistributing keys.' 
+        }
       ],
       quiz: [
         { q: "What is the average time complexity for searching a key in a Hash Table?", options: ["O(1)", "O(N)", "O(log N)", "O(N log N)"], answer: 0 },
@@ -636,9 +698,20 @@
       id: 'trees', 
       title: 'Binary Trees & BST', 
       node: '07', 
-      blurb: 'Hierarchical node structures with left and right children.', 
+      blurb: 'Hierarchical node models with parent-child branching and sorted invariants.', 
       lesson: [
-        { h: 'Binary Search Trees (BST)', b: 'Left child < Parent < Right child. Enables O(log N) average searches.' }
+        { 
+          h: 'Binary Search Tree (BST) Invariant', 
+          b: 'A BST enforces that all nodes in a left subtree are smaller than the parent, while right subtree nodes are larger. This structure enables O(log N) average searches.' 
+        },
+        { 
+          h: 'Traversal Orders', 
+          b: 'Trees are explored via systematic traversals: In-order visits left-root-right (producing sorted sequences for BSTs), Pre-order visits root-first, and Post-order processes children first.' 
+        },
+        { 
+          h: 'Self-Balancing Optimization', 
+          b: 'Unbalanced trees can degrade into linear $O(N)$ structures. Self-balancing variants like AVL and Red-Black trees perform automatic rotations to maintain logarithmic depth.' 
+        }
       ],
       quiz: [
         { q: "In a valid Binary Search Tree (BST), where are values smaller than the parent node placed?", options: ["Right child subtree", "Left child subtree", "At the root only", "In leaf nodes only"], answer: 1 },
@@ -657,9 +730,20 @@
       id: 'graphs', 
       title: 'Graphs & Traversals', 
       node: '08', 
-      blurb: 'Networks composed of Vertices (nodes) and Edges (connections).', 
+      blurb: 'Networks composed of vertices connected via directed or weighted edges.', 
       lesson: [
-        { h: 'Traversals', b: 'BFS (Breadth-First using Queue) vs DFS (Depth-First using Stack).' }
+        { 
+          h: 'Graph Structures & Representations', 
+          b: 'Graphs model relational data using Vertices (nodes) and Edges (connections). They are represented programmatically through Adjacency Lists or Adjacency Matrices.' 
+        },
+        { 
+          h: 'BFS vs DFS Traversals', 
+          b: 'Breadth-First Search (BFS) explores neighbor nodes level-by-level using queues, whereas Depth-First Search (DFS) probes deep paths exhaustively using recursion or stacks.' 
+        },
+        { 
+          h: 'Pathfinding & Spanning Trees', 
+          b: 'Advanced graph algorithms solve optimization problems, such as finding shortest weighted routes with Dijkstra\'s algorithm or constructing minimum spanning trees with Kruskal\'s strategy.' 
+        }
       ],
       quiz: [
         { q: "Which helper data structure is typically used to implement Breadth-First Search (BFS)?", options: ["Stack", "Queue", "Binary Heap", "Hash Map"], answer: 1 },
