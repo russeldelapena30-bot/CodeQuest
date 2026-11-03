@@ -251,7 +251,7 @@
 
 <!-- 2-3 SECOND LOADING SCREEN -->
 <div id="loading-screen">
-  <img src="data:image/webp;base64,UklGRqYAAABXRUJQVlA4WAoAAAAQAAAAQwAAQwAAQUxQSFgAAAABH4B0SUpKSkqKiooAAAAAAEJKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBK" alt="CodeQuest Logo" class="loading-logo">
+  <img src="CodeQuest.webp" alt="CodeQuest Logo" class="loading-logo">
   <div class="loading-title">CodeQuest</div>
   <div class="loading-subtitle">Explore • Build • Innovate</div>
   <div class="loading-bar-track">
@@ -261,7 +261,7 @@
 
 <div class="navbar">
   <a class="logo-container" onclick="switchTab(authToken ? 'tutor' : 'auth')">
-    <img src="data:image/webp;base64,UklGRqYAAABXRUJQVlA4WAoAAAAQAAAAQwAAQwAAQUxQSFgAAAABH4B0SUpKSkqKiooAAAAAAEJKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBK" alt="CodeQuest Logo" class="nav-logo-img">
+    <img src="CodeQuest.webp" alt="CodeQuest Logo" class="nav-logo-img">
     <div class="logo-text">CodeQuest</div>
   </a>
   
@@ -1301,14 +1301,3 @@
   function retakeAndScrambleQuizFromModal() {
     closeQuizModal();
     retakeAndScrambleQuiz();
-  }
-
-  // Initialization Calls
-  initTheme();
-  updateNav();
-  renderTutor();
-  initQuizView();
-  if (authToken) switchTab('tutor');
-</script>
-</body>
-</html>
