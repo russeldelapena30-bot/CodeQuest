@@ -40,7 +40,7 @@
     * { box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: var(--bg); min-height: 100vh; margin: 0; padding: 0; color: var(--text); transition: background 0.3s, color 0.3s; }
 
-    /* FIXED NAVBAR - Prevents vertical stacking on desktop */
+    /* NAVBAR */
     .navbar { background: var(--navbar-bg); padding: 12px 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); width: 100%; }
     .logo-container { display: flex; align-items: center; gap: 10px; color: white; flex-shrink: 0; }
     .logo-icon { width: 36px; height: 36px; background: var(--amber); color: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; }
@@ -68,11 +68,20 @@
     input, select, button { padding: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 6px; font-size: 1em; width: 100%; transition: background 0.3s, color 0.3s, border-color 0.3s; }
     input:focus, select:focus { border-color: var(--amber); outline: none; }
     
-    /* PASSWORD FIELD FIX: Generous right padding so text never goes under the eye icon */
-    .pwd-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
-    .pwd-wrapper input { width: 100%; padding-right: 48px !important; }
-    .pwd-toggle-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1em; padding: 4px; z-index: 5; line-height: 1; }
-    .pwd-toggle-btn:hover { color: var(--amber); }
+    /* ROBUST PASSWORD FIELD CONTAINER & PADDING FIX */
+    .pwd-wrapper { position: relative; display: block; width: 100%; }
+    .pwd-wrapper input[type="password"],
+    .pwd-wrapper input[type="text"] {
+      width: 100% !important;
+      padding-right: 52px !important; /* Forces text to stop well before the eye button */
+    }
+    /* Hide native browser password reveal buttons (Edge, IE, Safari) */
+    .pwd-wrapper input::-ms-reveal,
+    .pwd-wrapper input::-ms-clear { display: none; }
+    .pwd-wrapper input::-webkit-credentials-auto-fill-button { visibility: hidden; pointer-events: none; position: absolute; right: 0; }
+
+    .pwd-toggle-btn { position: absolute; right: 2px; top: 2px; bottom: 2px; width: 44px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1em; display: flex; align-items: center; justify-content: center; z-index: 5; }
+    .pwd-toggle-btn:hover { color: var(--amber); background: transparent; }
 
     button { background-color: var(--amber); color: #12141c; border: none; cursor: pointer; font-weight: bold; }
     button:hover { background-color: var(--amber-hover); }
