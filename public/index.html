@@ -190,9 +190,9 @@
     .lesson-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
     .lesson-block h3 { color: var(--amber); margin-top: 0; font-size: 1.15em; }
     
-    .topic-image-container { margin-top: 15px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: var(--surface-2); text-align: center; }
-    .topic-image { width: 100%; max-height: 280px; object-fit: cover; display: block; }
-    .image-caption { padding: 8px 12px; font-size: 0.85em; color: var(--text-muted); font-style: italic; background: var(--surface-2); }
+    .topic-banner { margin-top: 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); padding: 25px; text-align: center; font-family: 'JetBrains Mono', monospace; }
+    .banner-title { font-size: 1.1em; color: var(--amber); font-weight: bold; margin-bottom: 6px; }
+    .image-caption { padding: 8px 12px; font-size: 0.85em; color: var(--text-muted); font-style: italic; background: var(--surface-2); margin-top: 8px; border-radius: 4px; }
 
     .next-topic-btn { background: var(--surface-2); color: var(--amber); border: 1px solid var(--amber); border-radius: 8px; padding: 12px 20px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; width: auto; }
     .next-topic-btn:hover { background: var(--amber); color: #12141c; }
@@ -781,7 +781,7 @@
         { 
           h: 'Asymptotic Analysis & Upper Bounds', 
           b: 'Big-O analysis evaluates an algorithm\'s efficiency independently of hardware fluctuations by focusing on the dominant growth term as input size (N) approaches infinity.',
-          img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+          bannerTitle: 'O(1) vs O(log N) vs O(N) vs O(N²)',
           caption: 'Figure 1.1: Growth trajectories across Big-O complexity tiers.'
         },
         { 
@@ -815,7 +815,7 @@
         { 
           h: 'Contiguous Memory Architecture', 
           b: 'Arrays store data items in adjacent memory locations. Using base memory addresses combined with element size arithmetic, compilers compute physical locations instantly.',
-          img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+          bannerTitle: '[ Index 0 ] [ Index 1 ] [ Index 2 ] [ Index 3 ]',
           caption: 'Figure 2.1: Contiguous memory blocks and address arithmetic.'
         },
         { 
@@ -849,7 +849,7 @@
         { 
           h: 'Node Structure & Pointers', 
           b: 'Linked lists do not require contiguous memory. Each node contains data and reference pointers (`next`, `prev`) pointing to adjacent nodes.',
-          img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
+          bannerTitle: '[ Data | Next* ] ──> [ Data | Next* ] ──> NULL',
           caption: 'Figure 3.1: Nodes connected via reference pointers.'
         },
         { 
@@ -883,7 +883,7 @@
         { 
           h: 'Core LIFO Operations', 
           b: 'Push adds an item to the top, while Pop removes the top element. Both execute in O(1) constant time.',
-          img: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
+          bannerTitle: 'TOP ──> [ 30 ] [ 20 ] [ 10 ] (Bottom)',
           caption: 'Figure 4.1: Stack push and pop mechanics.'
         },
         { 
@@ -917,7 +917,7 @@
         { 
           h: 'Core FIFO Mechanics', 
           b: 'Items enter at the back via Enqueue and are removed from the front via Dequeue in O(1) time.',
-          img: 'https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=800&q=80',
+          bannerTitle: 'FRONT [ 10 ][ 20 ][ 30 ][ 40 ] REAR',
           caption: 'Figure 5.1: Queue processing order.'
         },
         { 
@@ -951,7 +951,7 @@
         { 
           h: 'Hash Functions & Indexing', 
           b: 'Hash tables convert keys into numeric hash codes, mapping them directly to internal buckets to achieve O(1) average lookups.',
-          img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
+          bannerTitle: 'Key("username") ──> Hash("0x7F") ──> Bucket [3]',
           caption: 'Figure 6.1: Key hashing into bucket indices.'
         },
         { 
@@ -985,7 +985,7 @@
         { 
           h: 'Binary Search Tree (BST) Invariant', 
           b: 'A BST enforces that left subtree nodes are smaller than the parent, and right nodes are larger, enabling O(log N) searches.',
-          img: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=800&q=80',
+          bannerTitle: '       [ 50 ]\n      /      \\\n    [30]    [70]',
           caption: 'Figure 7.1: BST branching structure.'
         },
         { 
@@ -1019,7 +1019,7 @@
         { 
           h: 'Graph Structures & Representations', 
           b: 'Graphs model relational data using Vertices and Edges via Adjacency Lists or Matrices.',
-          img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+          bannerTitle: '(A) ──[w: 4]──> (B) ──> (C)',
           caption: 'Figure 8.1: Network topology.'
         },
         { 
@@ -1060,9 +1060,9 @@
       <div class="lesson-block">
         <h3>${l.h}</h3>
         <p>${l.b}</p>
-        ${l.img ? `
-          <div class="topic-image-container">
-            <img src="${l.img}" alt="${l.h}" class="topic-image" />
+        ${l.bannerTitle ? `
+          <div class="topic-banner">
+            <div class="banner-title">${l.bannerTitle}</div>
             ${l.caption ? `<div class="image-caption">${l.caption}</div>` : ''}
           </div>
         ` : ''}
