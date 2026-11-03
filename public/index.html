@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CodeQuest - Authentication & DSA Tutor</title>
+  <title>CodeQuest - Authentication, DSA Tutor & Code Tracer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
   <style>
-    /* THEME VARIABLES */
+    /* ========================================================
+       1. THEME VARIABLES & GLOBAL STYLING
+       ======================================================== */
     :root {
       --bg: #12141c;
       --surface: #191d28;
@@ -40,20 +42,23 @@
     * { box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: var(--bg); min-height: 100vh; margin: 0; padding: 0; color: var(--text); transition: background 0.3s, color 0.3s; }
 
-    /* NAVBAR */
+    /* ========================================================
+       2. RESPONSIVE NAVBAR
+       ======================================================== */
     .navbar { background: var(--navbar-bg); padding: 12px 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); width: 100%; }
     .logo-container { display: flex; align-items: center; gap: 10px; color: white; flex-shrink: 0; }
     .logo-icon { width: 36px; height: 36px; background: var(--amber); color: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; }
     .logo-text { font-size: 1.4em; font-weight: 700; color: #ffffff; white-space: nowrap; }
 
-    .nav-tabs { display: flex; gap: 10px; align-items: center; flex-wrap: nowrap; }
-    .nav-btn { background: rgba(255, 255, 255, 0.15); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9em; white-space: nowrap; transition: all 0.2s; }
+    .nav-tabs { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; overflow-x: auto; }
+    .nav-btn { background: rgba(255, 255, 255, 0.15); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85em; white-space: nowrap; transition: all 0.2s; }
     .nav-btn:hover, .nav-btn.active { background: var(--amber); border-color: var(--amber); color: #12141c; }
     
-    .theme-toggle-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9em; white-space: nowrap; transition: all 0.2s; }
+    .theme-toggle-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.9em; white-space: nowrap; transition: all 0.2s; }
     .theme-toggle-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
-    .user-profile-badge { display: flex; align-items: center; gap: 8px; background: var(--surface-2); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--text); font-size: 0.85em; white-space: nowrap; }
+    .user-profile-badge { display: flex; align-items: center; gap: 8px; background: var(--surface-2); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--text); font-size: 0.85em; white-space: nowrap; cursor: pointer; }
+    .user-profile-badge:hover { border-color: var(--amber); }
     .logout-btn { background: #f2777a; color: white; font-size: 0.8em; padding: 4px 8px; border-radius: 4px; cursor: pointer; border: none; }
     .logout-btn:hover { background: #d65c5f; }
 
@@ -68,14 +73,15 @@
     input, select, button { padding: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 6px; font-size: 1em; width: 100%; transition: background 0.3s, color 0.3s, border-color 0.3s; }
     input:focus, select:focus { border-color: var(--amber); outline: none; }
     
-    /* ROBUST PASSWORD FIELD CONTAINER & PADDING FIX */
+    /* ========================================================
+       3. PASSWORD TOGGLE & OVERLAP PREVENTION
+       ======================================================== */
     .pwd-wrapper { position: relative; display: block; width: 100%; }
     .pwd-wrapper input[type="password"],
     .pwd-wrapper input[type="text"] {
       width: 100% !important;
-      padding-right: 52px !important; /* Forces text to stop well before the eye button */
+      padding-right: 52px !important;
     }
-    /* Hide native browser password reveal buttons (Edge, IE, Safari) */
     .pwd-wrapper input::-ms-reveal,
     .pwd-wrapper input::-ms-clear { display: none; }
     .pwd-wrapper input::-webkit-credentials-auto-fill-button { visibility: hidden; pointer-events: none; position: absolute; right: 0; }
@@ -107,7 +113,9 @@
     .cell { width: 40px; height: 40px; border: 1px solid var(--border); background: var(--surface-2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
     .cell.active { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); font-weight: bold; }
 
-    /* DSA TUTOR LAYOUT: Desktop Side-by-Side Grid */
+    /* ========================================================
+       4. DSA TUTOR LAYOUT (Desktop Side-by-Side Grid)
+       ======================================================== */
     .dsa-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; margin-top: 20px; }
     aside.dsa-aside { display: flex; flex-direction: column; gap: 8px; }
     .node { width: 100%; display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; text-align: left; color: var(--text); font-size: 0.95em; }
@@ -131,6 +139,32 @@
     .quiz-nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 10px; flex-wrap: wrap; }
     .quiz-progress-indicator { font-family: 'JetBrains Mono', monospace; font-size: 0.9em; color: var(--text-muted); }
 
+    /* ========================================================
+       FEATURE STYLES: REWARD ANIMATION, PROFILE & CODE TRACER
+       ======================================================== */
+    .reward-badge-container { text-align: center; padding: 15px 0; }
+    .reward-trophy { font-size: 3.5em; animation: bounce 1.2s infinite alternate; display: inline-block; }
+    @keyframes bounce {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-10px) scale(1.08); }
+    }
+    
+    .profile-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
+    .profile-info-box { background: var(--surface-2); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
+    .profile-info-box label { display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px; }
+    .profile-info-box span { font-size: 1.05em; font-weight: 600; color: var(--text); }
+
+    /* CYBERPUNK DATA PACKET EXECUTION TRACER STYLES */
+    .tracer-highway { background: #0b0d14; border: 2px solid var(--amber); border-radius: 10px; padding: 20px; font-family: 'JetBrains Mono', monospace; position: relative; overflow: hidden; margin-top: 15px; box-shadow: 0 0 20px rgba(242, 166, 90, 0.15); }
+    .tracer-circuit-line { height: 4px; background: linear-gradient(90deg, var(--amber), var(--mint), #f2777a); margin: 15px 0; border-radius: 2px; position: relative; box-shadow: 0 0 10px var(--amber); }
+    .packet-node { display: inline-block; width: 16px; height: 16px; background: var(--mint); border-radius: 50%; position: absolute; top: -6px; animation: movePacket 3s infinite linear; box-shadow: 0 0 10px var(--mint); }
+    @keyframes movePacket {
+      0% { left: 0%; background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+      50% { background: var(--mint); box-shadow: 0 0 12px var(--mint); }
+      100% { left: 95%; background: #f2777a; box-shadow: 0 0 12px #f2777a; }
+    }
+    .tracer-log { background: #111520; border: 1px solid var(--border); padding: 12px; border-radius: 6px; font-size: 0.85em; color: var(--mint); min-height: 90px; max-height: 140px; overflow-y: auto; margin-top: 15px; }
+
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-overlay.active { display: flex; }
     .modal-card { background: var(--surface); border: 1px solid var(--amber); border-radius: 12px; width: 100%; max-width: 550px; max-height: 85vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: var(--text); }
@@ -139,11 +173,13 @@
     .sec-btn { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
     .sec-btn:hover { background: var(--border); }
 
-    /* MOBILE RESPONSIVE ADAPTATION (< 768px) */
+    /* ========================================================
+       5. MOBILE RESPONSIVE ADAPTATION (< 768px)
+       ======================================================== */
     @media (max-width: 767px) {
       .navbar { padding: 10px 15px; }
       .logo-text { font-size: 1.2em; }
-      .nav-btn { padding: 5px 10px; font-size: 0.8em; }
+      .nav-btn { padding: 5px 8px; font-size: 0.75em; }
       .theme-toggle-btn { padding: 5px 8px; font-size: 0.8em; }
       
       .dsa-layout { display: flex; flex-direction: column; gap: 15px; }
@@ -167,6 +203,7 @@
   <div class="nav-tabs" id="nav-container">
     <button class="nav-btn" onclick="switchTab('tutor')">DSA Tutor</button>
     <button class="nav-btn" onclick="switchTab('quiz')">DSA Quiz</button>
+    <button class="nav-btn" onclick="switchTab('tracer')">⚡ Code Tracer</button>
     <button class="nav-btn" id="admin-tab-btn" style="display: none;" onclick="switchTab('admin')">Admin</button>
     <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
     <div id="user-badge-area"></div>
@@ -279,7 +316,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: DSA QUIZ (ONE QUESTION AT A TIME) -->
+  <!-- TAB 2: DSA QUIZ -->
   <div id="quiz-view" class="view-section">
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
@@ -307,7 +344,68 @@
     </div>
   </div>
 
-  <!-- TAB 3: ADMIN DEVELOPER DASHBOARD -->
+  <!-- TAB 3: NEW FEATURE - DATA PACKET EXECUTION TRACER -->
+  <div id="tracer-view" class="view-section">
+    <div class="card">
+      <h2>⚡ Data Packet Execution Tracer (Cyberpunk Debugger)</h2>
+      <p style="color: var(--text-muted); font-size: 0.95em;">Transform static debugging into a glowing neon highway[cite: 3]. Run code simulation to trace packets of light moving through variables and loops[cite: 3].</p>
+      
+      <div class="form-group" style="margin-bottom: 15px;">
+        <label>Select Code Routine to Trace:</label>
+        <select id="tracer-script-select">
+          <option value="loop">For Loop Counter (Java / Python simulation)</option>
+          <option value="recursion">Recursive Call Stack Frame</option>
+          <option value="error">Logic Error & Sparking Circuit Handler</option>
+        </select>
+      </div>
+
+      <button type="button" onclick="runCodeTracer()" style="margin-bottom: 15px; width: auto; padding: 10px 20px;">▶ Execute Tracer Highway</button>
+
+      <div class="tracer-highway">
+        <div style="font-weight: bold; color: var(--amber); margin-bottom: 5px;">[Circuit Board Simulation Active]</div>
+        <div class="tracer-circuit-line">
+          <div class="packet-node" id="packetNode"></div>
+        </div>
+        <div class="tracer-log" id="tracerLogOutput">
+          System ready. Click "Execute Tracer Highway" to trace variable states and packet flow...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: USER PROFILE VIEW -->
+  <div id="profile-view" class="view-section">
+    <div class="card">
+      <h2>My Student Profile</h2>
+      <p style="color: var(--text-muted); font-size: 0.9em;">View your personal account details, registered credentials, and learning progress.</p>
+      
+      <div class="profile-info-grid">
+        <div class="profile-info-box">
+          <label>Username</label>
+          <span id="profile-username">-</span>
+        </div>
+        <div class="profile-info-box">
+          <label>Full Name</label>
+          <span id="profile-fullname">-</span>
+        </div>
+        <div class="profile-info-box">
+          <label>Email Address</label>
+          <span id="profile-email">-</span>
+        </div>
+        <div class="profile-info-box">
+          <label>Account Status</label>
+          <span style="color: var(--mint);">Active Student</span>
+        </div>
+      </div>
+
+      <h3 style="color: var(--amber); margin-top: 25px; font-size: 1.1em; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Completed Topics & Rewards</h3>
+      <div id="profile-badges-container" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: ADMIN DEVELOPER DASHBOARD -->
   <div id="admin-view" class="view-section">
     <div class="card">
       <h2>Developer Dashboard - Users & Quiz Scores</h2>
@@ -335,7 +433,7 @@
 
 </div>
 
-<!-- QUIZ RESULTS POPUP MODAL -->
+<!-- QUIZ RESULTS MODAL -->
 <div class="modal-overlay" id="quiz-modal">
   <div class="modal-card">
     <h2 id="modal-title" style="color: var(--amber); margin-top:0;">Quiz Completed!</h2>
@@ -350,6 +448,20 @@
   </div>
 </div>
 
+<!-- REWARD ANIMATION MODAL -->
+<div class="modal-overlay" id="reward-modal">
+  <div class="modal-card" style="text-align: center;">
+    <div class="reward-badge-container">
+      <div class="reward-trophy">🏆</div>
+    </div>
+    <h2 id="reward-modal-title" style="color: var(--amber); border: none;">Topic Completed!</h2>
+    <p id="reward-modal-desc" style="color: var(--text); font-size: 1em; line-height: 1.5; margin-bottom: 20px;"></p>
+    <div class="modal-actions">
+      <button type="button" onclick="closeRewardModal()" style="width: 100%;">Awesome, Continue Learning! 🎉</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const API_URL = '/api';
   let currentUser = JSON.parse(localStorage.getItem('cq_user')) || null;
@@ -359,6 +471,7 @@
   let currentQuestionIndex = 0;
   let userAnswers = {}; 
   let pendingQuizResult = null;
+  let completedTopics = JSON.parse(localStorage.getItem('cq_completed_topics')) || {};
 
   function initTheme() {
     const savedTheme = localStorage.getItem('cq_theme') || 'dark';
@@ -393,9 +506,9 @@
 
     if (currentUser) {
       badgeArea.innerHTML = `
-        <div class="user-profile-badge">
+        <div class="user-profile-badge" onclick="switchTab('profile')" title="View My Profile">
           <span><b>${currentUser.first_name}</b></span>
-          <button class="logout-btn" onclick="logout()">Logout</button>
+          <button class="logout-btn" onclick="event.stopPropagation(); logout();">Logout</button>
         </div>
       `;
       if (currentUser.username === 'admin') {
@@ -420,6 +533,8 @@
 
     if (tabName === 'admin') {
       loadAdminScores();
+    } else if (tabName === 'profile') {
+      loadProfileData();
     }
   }
 
@@ -533,6 +648,33 @@
     switchTab('auth');
   }
 
+  function loadProfileData() {
+    if (!currentUser) return;
+    document.getElementById('profile-username').innerText = currentUser.username || 'N/A';
+    document.getElementById('profile-fullname').innerText = `${currentUser.first_name || ''} ${currentUser.middle_initial ? currentUser.middle_initial + '.' : ''} ${currentUser.last_name || ''}`;
+    document.getElementById('profile-email').innerText = currentUser.email || 'N/A';
+
+    const badgesContainer = document.getElementById('profile-badges-container');
+    const finishedIds = Object.keys(completedTopics);
+
+    if (finishedIds.length === 0) {
+      badgesContainer.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9em;">No topic reward badges earned yet. Finish a DSA lesson or click through topics to earn rewards!</p>`;
+    } else {
+      badgesContainer.innerHTML = finishedIds.map(id => {
+        const topicObj = TOPICS.find(t => t.id === id);
+        return `
+          <div style="background: var(--surface-2); border: 1px solid var(--amber); padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
+            <span>🏆</span>
+            <div>
+              <b style="color: var(--amber); font-size: 0.9em; display: block;">${topicObj ? topicObj.title : id}</b>
+              <span style="font-size: 0.75em; color: var(--mint);">Completed Reward Badge</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
   async function loadAdminScores() {
     const res = await fetch(`${API_URL}/admin/user-scores`, {
       headers: { 'Authorization': `Bearer ${authToken}` }
@@ -576,6 +718,23 @@
     } else {
       showAlert(data.error || 'Failed to delete user', 'error');
     }
+  }
+
+  // NEW FEATURE: Code Tracer simulation logic
+  function runCodeTracer() {
+    const type = document.getElementById('tracer-script-select').value;
+    const logOut = document.getElementById('tracerLogOutput');
+    logOut.innerHTML = 'Initializing neon circuit packets...<br>';
+
+    setTimeout(() => {
+      if (type === 'loop') {
+        logOut.innerHTML += '⚡ [Loop Execution]: for (int i = 0; i < 3; i++)<br>↳ Packet i=0 emitted. Value processed successfully.<br>↳ Packet i=1 emitted. Value processed successfully.<br>↳ Packet i=2 emitted. Loop terminated cleanly. [Status: OK]';
+      } else if (type === 'recursion') {
+        logOut.innerHTML += '⚡ [Call Stack Frame]: recursiveFunc(3)<br>↳ Frame 1 pushed: n=3<br>↳ Frame 2 pushed: n=2<br>↳ Frame 3 pushed: n=1 (Base case reached)<br>↳ Unwinding stack... [Status: Success]';
+      } else {
+        logOut.innerHTML += '⚡ [Error Debugger]: Detecting runtime exception...<br>⚠️ Sparking circuit detected at line 14: NullPointerException.<br>↳ Red flashing packet isolated. Check variable initialization! [Status: Debugged]';
+      }
+    }, 800);
   }
 
   const TOPICS = [
@@ -883,10 +1042,29 @@
       <h2>${t.title}</h2>
       <p style="color: var(--text-muted); font-size: 1em; margin-bottom: 20px;">${t.blurb}</p>
       ${lessonsHtml}
-      <button class="next-topic-btn" onclick="renderTopic(${nextTopicIndex})">
+      <button class="next-topic-btn" onclick="completeTopicAndAdvance('${t.id}', ${nextTopicIndex})">
         Next Topic: ${nextTopicTitle} &rarr;
       </button>
     `;
+  }
+
+  function completeTopicAndAdvance(topicId, nextIdx) {
+    if (!completedTopics[topicId]) {
+      completedTopics[topicId] = true;
+      localStorage.setItem('cq_completed_topics', JSON.stringify(completedTopics));
+      
+      const topicObj = TOPICS.find(t => t.id === topicId);
+      document.getElementById('reward-modal-title').innerText = `Completed: ${topicObj.title}! 🎉`;
+      document.getElementById('reward-modal-desc').innerText = `Amazing job! You've unlocked the completion reward badge for ${topicObj.title}. Keep up the great coding journey!`;
+      document.getElementById('reward-modal').classList.add('active');
+    } else {
+      renderTopic(nextIdx);
+    }
+  }
+
+  function closeRewardModal() {
+    document.getElementById('reward-modal').classList.remove('active');
+    renderTopic((TOPICS.findIndex(t => t.title === document.querySelector('#mainContent h2').innerText) + 1) % TOPICS.length);
   }
 
   function renderTutor() {
@@ -1099,6 +1277,7 @@
     retakeAndScrambleQuiz();
   }
 
+  // Initialization Calls
   initTheme();
   updateNav();
   renderTutor();
