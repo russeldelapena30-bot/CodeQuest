@@ -116,6 +116,10 @@
     .quiz-option-label { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; cursor: pointer; color: var(--text); }
     .quiz-option-label:hover { border-color: var(--amber); }
 
+    /* Quiz Navigation Bar */
+    .quiz-nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 10px; }
+    .quiz-progress-indicator { font-family: 'JetBrains Mono', monospace; font-size: 0.9em; color: var(--text-muted); }
+
     /* Modal Overlay */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-overlay.active { display: flex; }
@@ -249,7 +253,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: DSA QUIZ -->
+  <!-- TAB 2: DSA QUIZ (ONE QUESTION AT A TIME) -->
   <div id="quiz-view" class="view-section">
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
@@ -258,7 +262,7 @@
           🔀 Retake Quiz (Scrambled)
         </button>
       </div>
-      <p style="color: var(--text-muted);">Select any topic, answer all 10 questions, review your grade, and save your score directly to your database profile.</p>
+      <p style="color: var(--text-muted);">Select any topic, answer questions one by one, review your grade, and save your score to your database profile.</p>
 
       <div class="form-group" style="margin-bottom: 25px;">
         <label for="quiz-topic-select">Select Topic to Test:</label>
@@ -266,11 +270,14 @@
         </select>
       </div>
 
-      <form id="dsa-quiz-form">
-        <div id="quiz-questions-container"></div>
-        <br>
-        <button type="submit" style="width: 100%; padding: 12px; font-size: 1.05em;">Check Quiz Results</button>
-      </form>
+      <div id="quiz-question-card" style="background: var(--surface); padding: 22px; border-radius: 8px; border: 1px solid var(--border); min-height: 220px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div id="quiz-question-content"></div>
+        <div class="quiz-nav-footer">
+          <button type="button" class="sec-btn" id="prev-q-btn" onclick="prevQuestion()" style="padding: 10px 18px;">&larr; Previous</button>
+          <div class="quiz-progress-indicator" id="quiz-progress-text">Question 1 of 10</div>
+          <button type="button" id="next-q-btn" onclick="nextQuestion()" style="padding: 10px 18px;">Next &rarr;</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -320,8 +327,10 @@
   let currentUser = JSON.parse(localStorage.getItem('cq_user')) || null;
   let authToken = localStorage.getItem('cq_token') || null;
 
-  // Track active quiz state for scrambling & saving
+  // Track active quiz state
   let activeQuizQuestions = [];
+  let currentQuestionIndex = 0;
+  let userAnswers = {}; // stores selected option index per question
   let pendingQuizResult = null;
 
   // Theme Initializer
@@ -874,7 +883,7 @@
     renderTopic(0);
   }
 
-  // QUIZ FUNCTIONS
+  // QUIZ FUNCTIONS (ONE QUESTION AT A TIME)
   function initQuizView() {
     const selectEl = document.getElementById('quiz-topic-select');
     selectEl.innerHTML = TOPICS.map((t, idx) => `<option value="${idx}">${t.node}. ${t.title}</option>`).join('');
@@ -890,7 +899,84 @@
       options: [...q.options],
       answer: q.answer
     }));
-    renderQuizQuestions();
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  function saveCurrentAnswer() {
+    const checkedOpt = document.querySelector(`input[name="current_q"]:checked`);
+    if (checkedOpt) {
+      userAnswers[currentQuestionIndex] = parseInt(checkedOpt.value);
+    }
+  }
+
+  function renderCurrentQuestion() {
+    const container = document.getElementById('quiz-question-content');
+    const progressText = document.getElementById('quiz-progress-text');
+    const prevBtn = document.getElementById('prev-q-btn');
+    const nextBtn = document.getElementById('next-q-btn');
+
+    if (!activeQuizQuestions || activeQuizQuestions.length === 0) {
+      container.innerHTML = '<p>No questions available for this topic yet.</p>';
+      return;
+    }
+
+    const qObj = activeQuizQuestions[currentQuestionIndex];
+    const savedAns = userAnswers[currentQuestionIndex];
+
+    container.innerHTML = `
+      <div>
+        <p style="margin-top:0; font-weight: 600; color: var(--amber); font-size: 1.1em;">Question ${currentQuestionIndex + 1}: ${qObj.q}</p>
+        <div style="margin-top: 15px;">
+          ${qObj.options.map((opt, optIdx) => `
+            <label class="quiz-option-label">
+              <input type="radio" name="current_q" value="${optIdx}" ${savedAns === optIdx ? 'checked' : ''} onchange="saveCurrentAnswer()">
+              <span>${opt}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    progressText.innerText = `Question ${currentQuestionIndex + 1} of ${activeQuizQuestions.length}`;
+    prevBtn.style.visibility = currentQuestionIndex === 0 ? 'hidden' : 'visible';
+
+    if (currentQuestionIndex === activeQuizQuestions.length - 1) {
+      nextBtn.innerText = 'Submit Quiz 🏁';
+      nextBtn.style.backgroundColor = 'var(--mint)';
+      nextBtn.style.color = '#12141c';
+    } else {
+      nextBtn.innerText = 'Next →';
+      nextBtn.style.backgroundColor = 'var(--amber)';
+      nextBtn.style.color = '#12141c';
+    }
+  }
+
+  function prevQuestion() {
+    saveCurrentAnswer();
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      renderCurrentQuestion();
+    }
+  }
+
+  function nextQuestion() {
+    saveCurrentAnswer();
+    
+    // Check if user selected an answer for the current question
+    if (userAnswers[currentQuestionIndex] === undefined) {
+      showAlert('Please select an option before proceeding!', 'error');
+      return;
+    }
+
+    if (currentQuestionIndex < activeQuizQuestions.length - 1) {
+      currentQuestionIndex++;
+      renderCurrentQuestion();
+    } else {
+      // Final submission trigger
+      submitQuizResults();
+    }
   }
 
   function scrambleArray(array) {
@@ -902,45 +988,20 @@
   }
 
   function retakeAndScrambleQuiz() {
-    // Scramble question order
     scrambleArray(activeQuizQuestions);
-
-    // Scramble options within each question
     activeQuizQuestions.forEach(qObj => {
       const correctAnswerText = qObj.options[qObj.answer];
       scrambleArray(qObj.options);
       qObj.answer = qObj.options.indexOf(correctAnswerText);
     });
-
-    renderQuizQuestions();
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
     showAlert('Quiz re-scrambled! Test yourself again.', 'success');
   }
 
-  function renderQuizQuestions() {
-    const container = document.getElementById('quiz-questions-container');
-
-    if (!activeQuizQuestions || activeQuizQuestions.length === 0) {
-      container.innerHTML = '<p>No questions available for this topic yet.</p>';
-      return;
-    }
-
-    container.innerHTML = activeQuizQuestions.map((qObj, qIdx) => `
-      <div style="margin-bottom: 20px; background: var(--surface); padding: 18px; border-radius: 8px; border: 1px solid var(--border);">
-        <p style="margin-top:0; font-weight: 600; color: var(--amber);">Question ${qIdx + 1}: ${qObj.q}</p>
-        ${qObj.options.map((opt, optIdx) => `
-          <label class="quiz-option-label">
-            <input type="radio" name="q_${qIdx}" value="${optIdx}" required>
-            <span>${opt}</span>
-          </label>
-        `).join('')}
-      </div>
-    `).join('');
-  }
-
   // QUIZ SUBMISSION & POPUP MODAL
-  document.getElementById('dsa-quiz-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    
+  function submitQuizResults() {
     const selectedTopicIdx = document.getElementById('quiz-topic-select').value;
     const topic = TOPICS[selectedTopicIdx];
     let calculatedScore = 0;
@@ -948,8 +1009,7 @@
     let breakdownHtml = '';
 
     activeQuizQuestions.forEach((qObj, qIdx) => {
-      const selectedOpt = document.querySelector(`input[name="q_${qIdx}"]:checked`);
-      const userSelectedVal = selectedOpt ? parseInt(selectedOpt.value) : -1;
+      const userSelectedVal = userAnswers[qIdx] !== undefined ? userAnswers[qIdx] : -1;
       const isCorrect = userSelectedVal === qObj.answer;
 
       if (isCorrect) calculatedScore++;
@@ -984,7 +1044,7 @@
     document.getElementById('scramble-btn').style.display = 'inline-block';
     
     document.getElementById('quiz-modal').classList.add('active');
-  });
+  }
 
   async function saveQuizScore() {
     if (!pendingQuizResult) return;
