@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CodeQuest - Authentication, DSA Tutor & Code Tracer</title>
+  <title>CodeQuest - Authentication & DSA Tutor</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
@@ -140,7 +140,7 @@
     .quiz-progress-indicator { font-family: 'JetBrains Mono', monospace; font-size: 0.9em; color: var(--text-muted); }
 
     /* ========================================================
-       FEATURE STYLES: REWARD ANIMATION, PROFILE & CODE TRACER
+       FEATURE STYLES: REWARD ANIMATION & PROFILE VIEW
        ======================================================== */
     .reward-badge-container { text-align: center; padding: 15px 0; }
     .reward-trophy { font-size: 3.5em; animation: bounce 1.2s infinite alternate; display: inline-block; }
@@ -153,17 +153,6 @@
     .profile-info-box { background: var(--surface-2); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
     .profile-info-box label { display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px; }
     .profile-info-box span { font-size: 1.05em; font-weight: 600; color: var(--text); }
-
-    /* CYBERPUNK DATA PACKET EXECUTION TRACER STYLES */
-    .tracer-highway { background: #0b0d14; border: 2px solid var(--amber); border-radius: 10px; padding: 20px; font-family: 'JetBrains Mono', monospace; position: relative; overflow: hidden; margin-top: 15px; box-shadow: 0 0 20px rgba(242, 166, 90, 0.15); }
-    .tracer-circuit-line { height: 4px; background: linear-gradient(90deg, var(--amber), var(--mint), #f2777a); margin: 15px 0; border-radius: 2px; position: relative; box-shadow: 0 0 10px var(--amber); }
-    .packet-node { display: inline-block; width: 16px; height: 16px; background: var(--mint); border-radius: 50%; position: absolute; top: -6px; animation: movePacket 3s infinite linear; box-shadow: 0 0 10px var(--mint); }
-    @keyframes movePacket {
-      0% { left: 0%; background: var(--amber); box-shadow: 0 0 8px var(--amber); }
-      50% { background: var(--mint); box-shadow: 0 0 12px var(--mint); }
-      100% { left: 95%; background: #f2777a; box-shadow: 0 0 12px #f2777a; }
-    }
-    .tracer-log { background: #111520; border: 1px solid var(--border); padding: 12px; border-radius: 6px; font-size: 0.85em; color: var(--mint); min-height: 90px; max-height: 140px; overflow-y: auto; margin-top: 15px; }
 
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
     .modal-overlay.active { display: flex; }
@@ -179,7 +168,7 @@
     @media (max-width: 767px) {
       .navbar { padding: 10px 15px; }
       .logo-text { font-size: 1.2em; }
-      .nav-btn { padding: 5px 8px; font-size: 0.75em; }
+      .nav-btn { padding: 5px 10px; font-size: 0.8em; }
       .theme-toggle-btn { padding: 5px 8px; font-size: 0.8em; }
       
       .dsa-layout { display: flex; flex-direction: column; gap: 15px; }
@@ -203,7 +192,6 @@
   <div class="nav-tabs" id="nav-container">
     <button class="nav-btn" onclick="switchTab('tutor')">DSA Tutor</button>
     <button class="nav-btn" onclick="switchTab('quiz')">DSA Quiz</button>
-    <button class="nav-btn" onclick="switchTab('tracer')">⚡ Code Tracer</button>
     <button class="nav-btn" id="admin-tab-btn" style="display: none;" onclick="switchTab('admin')">Admin</button>
     <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
     <div id="user-badge-area"></div>
@@ -344,36 +332,7 @@
     </div>
   </div>
 
-  <!-- TAB 3: NEW FEATURE - DATA PACKET EXECUTION TRACER -->
-  <div id="tracer-view" class="view-section">
-    <div class="card">
-      <h2>⚡ Data Packet Execution Tracer (Cyberpunk Debugger)</h2>
-      <p style="color: var(--text-muted); font-size: 0.95em;">Transform static debugging into a glowing neon highway[cite: 3]. Run code simulation to trace packets of light moving through variables and loops[cite: 3].</p>
-      
-      <div class="form-group" style="margin-bottom: 15px;">
-        <label>Select Code Routine to Trace:</label>
-        <select id="tracer-script-select">
-          <option value="loop">For Loop Counter (Java / Python simulation)</option>
-          <option value="recursion">Recursive Call Stack Frame</option>
-          <option value="error">Logic Error & Sparking Circuit Handler</option>
-        </select>
-      </div>
-
-      <button type="button" onclick="runCodeTracer()" style="margin-bottom: 15px; width: auto; padding: 10px 20px;">▶ Execute Tracer Highway</button>
-
-      <div class="tracer-highway">
-        <div style="font-weight: bold; color: var(--amber); margin-bottom: 5px;">[Circuit Board Simulation Active]</div>
-        <div class="tracer-circuit-line">
-          <div class="packet-node" id="packetNode"></div>
-        </div>
-        <div class="tracer-log" id="tracerLogOutput">
-          System ready. Click "Execute Tracer Highway" to trace variable states and packet flow...
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB 4: USER PROFILE VIEW -->
+  <!-- TAB 3: USER PROFILE VIEW -->
   <div id="profile-view" class="view-section">
     <div class="card">
       <h2>My Student Profile</h2>
@@ -405,7 +364,7 @@
     </div>
   </div>
 
-  <!-- TAB 5: ADMIN DEVELOPER DASHBOARD -->
+  <!-- TAB 4: ADMIN DEVELOPER DASHBOARD -->
   <div id="admin-view" class="view-section">
     <div class="card">
       <h2>Developer Dashboard - Users & Quiz Scores</h2>
@@ -718,23 +677,6 @@
     } else {
       showAlert(data.error || 'Failed to delete user', 'error');
     }
-  }
-
-  // NEW FEATURE: Code Tracer simulation logic
-  function runCodeTracer() {
-    const type = document.getElementById('tracer-script-select').value;
-    const logOut = document.getElementById('tracerLogOutput');
-    logOut.innerHTML = 'Initializing neon circuit packets...<br>';
-
-    setTimeout(() => {
-      if (type === 'loop') {
-        logOut.innerHTML += '⚡ [Loop Execution]: for (int i = 0; i < 3; i++)<br>↳ Packet i=0 emitted. Value processed successfully.<br>↳ Packet i=1 emitted. Value processed successfully.<br>↳ Packet i=2 emitted. Loop terminated cleanly. [Status: OK]';
-      } else if (type === 'recursion') {
-        logOut.innerHTML += '⚡ [Call Stack Frame]: recursiveFunc(3)<br>↳ Frame 1 pushed: n=3<br>↳ Frame 2 pushed: n=2<br>↳ Frame 3 pushed: n=1 (Base case reached)<br>↳ Unwinding stack... [Status: Success]';
-      } else {
-        logOut.innerHTML += '⚡ [Error Debugger]: Detecting runtime exception...<br>⚠️ Sparking circuit detected at line 14: NullPointerException.<br>↳ Red flashing packet isolated. Check variable initialization! [Status: Debugged]';
-      }
-    }, 800);
   }
 
   const TOPICS = [
