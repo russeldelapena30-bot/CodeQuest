@@ -151,4 +151,1081 @@
     
     .profile-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
     .profile-info-box { background: var(--surface-2); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
-    .profile-info-box label { display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0
+    .profile-info-box label { display: block; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px; }
+    .profile-info-box span { font-size: 1.05em; font-weight: 600; color: var(--text); }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal-card { background: var(--surface); border: 1px solid var(--amber); border-radius: 12px; width: 100%; max-width: 550px; max-height: 85vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: var(--text); }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    .modal-actions button { flex: 1; min-width: 130px; }
+    .sec-btn { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .sec-btn:hover { background: var(--border); }
+
+    /* ========================================================
+       5. MOBILE RESPONSIVE ADAPTATION (< 768px)
+       ======================================================== */
+    @media (max-width: 767px) {
+      .navbar { padding: 10px 15px; }
+      .logo-text { font-size: 1.1em; }
+      .nav-logo-img { width: 30px; height: 30px; }
+      .nav-btn { padding: 5px 10px; font-size: 0.8em; }
+      .theme-toggle-btn { padding: 5px 8px; font-size: 0.8em; }
+      
+      .dsa-layout { display: flex; flex-direction: column; gap: 15px; }
+      aside.dsa-aside { display: flex; flex-direction: row; overflow-x: auto; padding-bottom: 5px; -webkit-overflow-scrolling: touch; }
+      aside.dsa-aside::-webkit-scrollbar { height: 4px; }
+      aside.dsa-aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+      .node { flex: 0 0 auto; white-space: nowrap; width: auto; font-size: 0.85em; padding: 8px 12px; }
+      .next-topic-btn { width: 100%; }
+      .quiz-progress-indicator { width: 100%; text-align: center; order: 3; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+<div class="navbar">
+  <a class="logo-container" onclick="switchTab(authToken ? 'tutor' : 'auth')">
+    <img src="CodeQuest.webp" alt="CodeQuest Logo" class="nav-logo-img">
+    <div class="logo-text">CodeQuest</div>
+  </a>
+  
+  <div class="nav-tabs" id="nav-container">
+    <button class="nav-btn" onclick="switchTab('tutor')">DSA Tutor</button>
+    <button class="nav-btn" onclick="switchTab('quiz')">DSA Quiz</button>
+    <button class="nav-btn" id="admin-tab-btn" style="display: none;" onclick="switchTab('admin')">Admin</button>
+    <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+    <div id="user-badge-area"></div>
+  </div>
+</div>
+
+<div class="container">
+  <div id="alert-box" class="message"></div>
+
+  <!-- AUTHENTICATION VIEW -->
+  <div id="auth-view" class="view-section active">
+    <div class="card" style="max-width: 440px; margin: 30px auto;">
+      <h2 id="auth-title">Login to CodeQuest</h2>
+      
+      <!-- LOGIN FORM -->
+      <form id="login-form">
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label>Username</label>
+          <input type="text" id="login-username" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label>Password</label>
+          <div class="pwd-wrapper">
+            <input type="password" id="login-password" required>
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('login-password', this)">👁️</button>
+          </div>
+        </div>
+        <button type="submit" style="width: 100%; padding: 12px;">Login</button>
+        <div class="auth-toggle">
+          <a onclick="toggleAuthMode('forgot')">Forgot Password?</a><br><br>
+          Don't have an account? <a onclick="toggleAuthMode('register')">Register here</a>
+        </div>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="register-form" style="display: none;">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Username *</label>
+            <input type="text" id="reg-username" required>
+          </div>
+          <div class="form-group">
+            <label>Password *</label>
+            <div class="pwd-wrapper">
+              <input type="password" id="reg-password" required>
+              <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('reg-password', this)">👁️</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="reg-email" required>
+          </div>
+          <div class="form-group">
+            <label>First Name *</label>
+            <input type="text" id="reg-firstname" required>
+          </div>
+          <div class="form-group">
+            <label>Last Name *</label>
+            <input type="text" id="reg-lastname" required>
+          </div>
+          <div class="form-group">
+            <label>Middle Initial</label>
+            <input type="text" id="reg-mi" maxlength="1">
+          </div>
+        </div>
+        <br>
+        <button type="submit" style="width: 100%; padding: 12px;">Create Account</button>
+        <div class="auth-toggle">
+          Already registered? <a onclick="toggleAuthMode('login')">Login here</a>
+        </div>
+      </form>
+
+      <!-- FORGOT PASSWORD FORM -->
+      <form id="forgot-form" style="display: none;">
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label>Account Email Address</label>
+          <input type="email" id="forgot-email" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label>New Password</label>
+          <div class="pwd-wrapper">
+            <input type="password" id="forgot-new-password" required>
+            <button type="button" class="pwd-toggle-btn" onclick="togglePasswordVisibility('forgot-new-password', this)">👁️</button>
+          </div>
+        </div>
+        <button type="submit" style="width: 100%; padding: 12px;">Reset Password</button>
+        <div class="auth-toggle">
+          Remembered password? <a onclick="toggleAuthMode('login')">Login here</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- TAB 1: DSA TUTOR -->
+  <div id="tutor-view" class="view-section">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <h2 style="margin:0; border:none; padding:0;">Interactive DSA Lessons</h2>
+        <div class="score-pill" id="scorePill"><b>8</b> Topics Available</div>
+      </div>
+      <div class="array-cells" id="arrayCells"></div>
+    </div>
+
+    <div class="dsa-layout">
+      <aside class="dsa-aside" id="chain">
+        <!-- Populated dynamically -->
+      </aside>
+      <main class="dsa-main" id="mainContent"></main>
+    </div>
+  </div>
+
+  <!-- TAB 2: DSA QUIZ -->
+  <div id="quiz-view" class="view-section">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <h2 style="margin:0; border:none; padding:0;">Playable DSA Topic Quiz</h2>
+        <button type="button" id="scramble-btn" class="sec-btn" onclick="retakeAndScrambleQuiz()" style="display:none; padding: 6px 14px; font-size:0.85em; width: auto;">
+          🔀 Retake Quiz (Scrambled)
+        </button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.95em;">Select any topic, answer questions one by one, review your grade, and save your score to your database profile.</p>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label for="quiz-topic-select">Select Topic to Test:</label>
+        <select id="quiz-topic-select" onchange="onTopicSelectChange(this.value)">
+        </select>
+      </div>
+
+      <div id="quiz-question-card" style="background: var(--surface); padding: 18px; border-radius: 8px; border: 1px solid var(--border); min-height: 200px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div id="quiz-question-content"></div>
+        <div class="quiz-nav-footer">
+          <button type="button" class="sec-btn" id="prev-q-btn" onclick="prevQuestion()" style="padding: 10px 16px; width: auto;">&larr; Previous</button>
+          <div class="quiz-progress-indicator" id="quiz-progress-text">Question 1 of 10</div>
+          <button type="button" id="next-q-btn" onclick="nextQuestion()" style="padding: 10px 16px; width: auto;">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: USER PROFILE VIEW -->
+  <div id="profile-view" class="view-section">
+    <div class="card">
+      <h2>My Student Profile</h2>
+      <p style="color: var(--text-muted); font-size: 0.9em;">View your personal account details, registered credentials, and learning progress.</p>
+      
+      <div class="profile-info-grid">
+        <div class="profile-info-box">
+          <label>Username</label>
+          <span id="profile-username">-</span>
+        </div>
+        <div class="profile-info-box">
+          <label>Full Name</label>
+          <span id="profile-fullname">-</span>
+        </div>
+        <div class="profile-info-box">
+          <label>Email Address</label>
+          <span id="profile-email">-</span>
+        </div>
+        <div class="profile-info-box">
+          <label>Account Status</label>
+          <span style="color: var(--mint);">Active Student</span>
+        </div>
+      </div>
+
+      <h3 style="color: var(--amber); margin-top: 25px; font-size: 1.1em; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Completed Topics & Rewards</h3>
+      <div id="profile-badges-container" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: ADMIN DEVELOPER DASHBOARD -->
+  <div id="admin-view" class="view-section">
+    <div class="card">
+      <h2>Developer Dashboard - Users & Quiz Scores</h2>
+      <p style="color: var(--text-muted); font-size: 0.9em;">Privileged view containing student registrations and test scores.</p>
+      
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Quiz</th>
+              <th>Score</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-scores-table">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- QUIZ RESULTS MODAL -->
+<div class="modal-overlay" id="quiz-modal">
+  <div class="modal-card">
+    <h2 id="modal-title" style="color: var(--amber); margin-top:0;">Quiz Completed!</h2>
+    <div id="modal-score-summary" style="font-size: 1.15em; font-weight: bold; margin-bottom: 12px; color: var(--mint);"></div>
+    <div id="modal-breakdown" style="font-size: 0.9em; line-height: 1.4; color: var(--text); max-height: 260px; overflow-y: auto; padding-right: 5px;"></div>
+    
+    <div class="modal-actions">
+      <button type="button" id="save-score-btn" onclick="saveQuizScore()">💾 Save Score</button>
+      <button type="button" class="sec-btn" onclick="retakeAndScrambleQuizFromModal()">🔀 Retake</button>
+      <button type="button" class="sec-btn" onclick="closeQuizModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- REWARD ANIMATION MODAL -->
+<div class="modal-overlay" id="reward-modal">
+  <div class="modal-card" style="text-align: center;">
+    <div class="reward-badge-container">
+      <div class="reward-trophy">🏆</div>
+    </div>
+    <h2 id="modal-title-reward" style="color: var(--amber); border: none;">Topic Completed!</h2>
+    <p id="reward-modal-desc" style="color: var(--text); font-size: 1em; line-height: 1.5; margin-bottom: 20px;"></p>
+    <div class="modal-actions">
+      <button type="button" onclick="closeRewardModal()" style="width: 100%;">Awesome, Continue Learning! 🎉</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_URL = '/api';
+  let currentUser = JSON.parse(localStorage.getItem('cq_user')) || null;
+  let authToken = localStorage.getItem('cq_token') || null;
+
+  let activeQuizQuestions = [];
+  let currentQuestionIndex = 0;
+  let userAnswers = {}; 
+  let pendingQuizResult = null;
+  let completedTopics = JSON.parse(localStorage.getItem('cq_completed_topics')) || {};
+
+  function initTheme() {
+    const savedTheme = localStorage.getItem('cq_theme') || 'dark';
+    document.body.setAttribute('data-theme', savedTheme);
+    const themeBtn = document.getElementById('theme-btn');
+    themeBtn.innerText = savedTheme === 'dark' ? '🌙' : '☀️';
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('cq_theme', newTheme);
+    const themeBtn = document.getElementById('theme-btn');
+    themeBtn.innerText = newTheme === 'dark' ? '🌙' : '☀️';
+  }
+
+  function togglePasswordVisibility(inputId, btnEl) {
+    const pwdInput = document.getElementById(inputId);
+    if (pwdInput.type === 'password') {
+      pwdInput.type = 'text';
+      btnEl.innerText = '🔒';
+    } else {
+      pwdInput.type = 'password';
+      btnEl.innerText = '👁️';
+    }
+  }
+
+  function updateNav() {
+    const badgeArea = document.getElementById('user-badge-area');
+    const adminBtn = document.getElementById('admin-tab-btn');
+
+    if (currentUser) {
+      badgeArea.innerHTML = `
+        <div class="user-profile-badge" onclick="switchTab('profile')" title="View My Profile">
+          <span><b>${currentUser.first_name}</b></span>
+          <button class="logout-btn" onclick="event.stopPropagation(); logout();">Logout</button>
+        </div>
+      `;
+      if (currentUser.username === 'admin') {
+        adminBtn.style.display = 'inline-block';
+      } else {
+        adminBtn.style.display = 'none';
+      }
+    } else {
+      badgeArea.innerHTML = `<button class="nav-btn active" onclick="switchTab('auth')">Login</button>`;
+      adminBtn.style.display = 'none';
+    }
+  }
+
+  function switchTab(tabName) {
+    if (!authToken && tabName !== 'auth') {
+      showAlert('Please login or register first!', 'error');
+      tabName = 'auth';
+    }
+
+    document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(`${tabName}-view`).classList.add('active');
+
+    if (tabName === 'admin') {
+      loadAdminScores();
+    } else if (tabName === 'profile') {
+      loadProfileData();
+    }
+  }
+
+  function toggleAuthMode(mode) {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('register-form').style.display = 'none';
+    document.getElementById('forgot-form').style.display = 'none';
+
+    if (mode === 'register') {
+      document.getElementById('register-form').style.display = 'block';
+      document.getElementById('auth-title').innerText = 'Create New Account';
+    } else if (mode === 'forgot') {
+      document.getElementById('forgot-form').style.display = 'block';
+      document.getElementById('auth-title').innerText = 'Reset Password';
+    } else {
+      document.getElementById('login-form').style.display = 'block';
+      document.getElementById('auth-title').innerText = 'Login to CodeQuest';
+    }
+  }
+
+  function showAlert(msg, type = 'success') {
+    const box = document.getElementById('alert-box');
+    box.className = `message ${type}`;
+    box.innerText = msg;
+    box.style.display = 'block';
+    setTimeout(() => { box.style.display = 'none'; }, 4000);
+  }
+
+  document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      username: document.getElementById('reg-username').value,
+      password: document.getElementById('reg-password').value,
+      email: document.getElementById('reg-email').value,
+      first_name: document.getElementById('reg-firstname').value,
+      last_name: document.getElementById('reg-lastname').value,
+      middle_initial: document.getElementById('reg-mi').value
+    };
+
+    const res = await fetch(`${API_URL}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      showAlert(data.message, 'success');
+      toggleAuthMode('login');
+    } else {
+      showAlert(data.error || 'Registration failed', 'error');
+    }
+  });
+
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      username: document.getElementById('login-username').value,
+      password: document.getElementById('login-password').value
+    };
+
+    const res = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      authToken = data.token;
+      currentUser = data.user;
+      localStorage.setItem('cq_token', authToken);
+      localStorage.setItem('cq_user', JSON.stringify(currentUser));
+      updateNav();
+      showAlert('Welcome back, ' + currentUser.first_name + '!', 'success');
+      switchTab('tutor');
+    } else {
+      showAlert(data.error || 'Login failed', 'error');
+    }
+  });
+
+  document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      email: document.getElementById('forgot-email').value,
+      new_password: document.getElementById('forgot-new-password').value
+    };
+
+    const res = await fetch(`${API_URL}/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      showAlert(data.message, 'success');
+      toggleAuthMode('login');
+    } else {
+      showAlert(data.error || 'Failed to reset password', 'error');
+    }
+  });
+
+  function logout() {
+    authToken = null;
+    currentUser = null;
+    localStorage.removeItem('cq_token');
+    localStorage.removeItem('cq_user');
+    updateNav();
+    showAlert('Logged out successfully.', 'success');
+    switchTab('auth');
+  }
+
+  function loadProfileData() {
+    if (!currentUser) return;
+    document.getElementById('profile-username').innerText = currentUser.username || 'N/A';
+    document.getElementById('profile-fullname').innerText = `${currentUser.first_name || ''} ${currentUser.middle_initial ? currentUser.middle_initial + '.' : ''} ${currentUser.last_name || ''}`;
+    document.getElementById('profile-email').innerText = currentUser.email || 'N/A';
+
+    const badgesContainer = document.getElementById('profile-badges-container');
+    const finishedIds = Object.keys(completedTopics);
+
+    if (finishedIds.length === 0) {
+      badgesContainer.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9em;">No topic reward badges earned yet. Finish a DSA lesson or click through topics to earn rewards!</p>`;
+    } else {
+      badgesContainer.innerHTML = finishedIds.map(id => {
+        const topicObj = TOPICS.find(t => t.id === id);
+        return `
+          <div style="background: var(--surface-2); border: 1px solid var(--amber); padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
+            <span>🏆</span>
+            <div>
+              <b style="color: var(--amber); font-size: 0.9em; display: block;">${topicObj ? topicObj.title : id}</b>
+              <span style="font-size: 0.75em; color: var(--mint);">Completed Reward Badge</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  async function loadAdminScores() {
+    const res = await fetch(`${API_URL}/admin/user-scores`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      const tbody = document.getElementById('admin-scores-table');
+      tbody.innerHTML = data.map(row => `
+        <tr>
+          <td>${row.user_id}</td>
+          <td><b>${row.username}</b></td>
+          <td>${row.first_name} ${row.last_name}</td>
+          <td>${row.email}</td>
+          <td>${row.quiz_name || 'None'}</td>
+          <td>${row.score !== null ? `${row.score}/${row.max_score}` : '-'}</td>
+          <td>
+            ${row.username !== 'admin' ? `
+              <button class="logout-btn" onclick="deleteUser(${row.user_id}, '${row.username}')">Delete</button>
+            ` : '<span style="color: var(--text-muted);">N/A</span>'}
+          </td>
+        </tr>
+      `).join('');
+    } else {
+      showAlert(data.error || 'Access denied', 'error');
+    }
+  }
+
+  async function deleteUser(userId, username) {
+    if (!confirm(`Delete user "${username}"?`)) return;
+
+    const res = await fetch(`${API_URL}/admin/users/${userId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      showAlert(data.message, 'success');
+      loadAdminScores();
+    } else {
+      showAlert(data.error || 'Failed to delete user', 'error');
+    }
+  }
+
+  const TOPICS = [
+    { 
+      id: 'bigo', 
+      title: 'Big-O Notation', 
+      node: '01', 
+      blurb: 'Formal mathematical framework classifying algorithmic scalability relative to input size (N).', 
+      lesson: [
+        { 
+          h: 'Asymptotic Analysis & Upper Bounds', 
+          b: 'Big-O analysis evaluates an algorithm\'s efficiency independently of hardware fluctuations by focusing on the dominant growth term as input size (N) approaches infinity.',
+          img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+          caption: 'Figure 1.1: Growth trajectories across Big-O complexity tiers.'
+        },
+        { 
+          h: 'Time Complexity Tiers', 
+          b: 'Constant O(1) operations execute instantly. Logarithmic O(log N) splits problems in half each step (e.g., Binary Search). Linear O(N) scales proportionally with single-pass scans.' 
+        },
+        { 
+          h: 'Space Complexity & Memory Overhead', 
+          b: 'Space complexity measures total auxiliary memory plus input storage consumed during execution, factoring in recursive call stack frames.' 
+        }
+      ],
+      quiz: [
+        { q: "What is the time complexity of accessing an element in an array directly by index?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "Which Big-O complexity represents quadratic growth (e.g., standard nested loops)?", options: ["O(N)", "O(N²)", "O(1)", "O(log N)"], answer: 1 },
+        { q: "What is the worst-case time complexity of Binary Search?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 2 },
+        { q: "Which complexity class represents the slowest rate of growth as N increases?", options: ["O(N!)", "O(N²)", "O(N)", "O(1)"], answer: 3 },
+        { q: "If an algorithm drops half of the remaining data in each step, what is its time complexity?", options: ["O(N)", "O(log N)", "O(N log N)", "O(1)"], answer: 1 },
+        { q: "What does Space Complexity measure?", options: ["Execution speed", "Memory usage relative to input size", "Disk read rate", "Lines of code"], answer: 1 },
+        { q: "What is the Big-O time complexity of linear search across an unsorted array?", options: ["O(1)", "O(log N)", "O(N)", "O(N log N)"], answer: 2 },
+        { q: "When dropping constants in Big-O analysis, what does O(2N + 5) simplify to?", options: ["O(2N)", "O(5)", "O(N)", "O(N²)"], answer: 2 },
+        { q: "Which Big-O complexity is common in optimal comparison-based sorting algorithms like Merge Sort?", options: ["O(N)", "O(N log N)", "O(N²)", "O(2^N)"], answer: 1 },
+        { q: "In Big-O notation, what does Big-O specifically describe?", options: ["Best-case scenario", "Upper bound / Worst-case scenario", "Average runtime only", "Exact execution time in milliseconds"], answer: 1 }
+      ]
+    },
+    { 
+      id: 'arrays', 
+      title: 'Arrays & Strings', 
+      node: '02', 
+      blurb: 'Contiguous memory blocks enabling instant indexed lookups and sequential access.', 
+      lesson: [
+        { 
+          h: 'Contiguous Memory Architecture', 
+          b: 'Arrays store data items in adjacent memory locations. Using base memory addresses combined with element size arithmetic, compilers compute physical locations instantly.',
+          img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+          caption: 'Figure 2.1: Contiguous memory blocks and address arithmetic.'
+        },
+        { 
+          h: 'Dynamic Resizing & Amortization', 
+          b: 'Dynamic arrays double their capacity when full, achieving amortized O(1) append performance.' 
+        },
+        { 
+          h: 'String Manipulation & Pointer Techniques', 
+          b: 'Strings are character arrays. Advanced patterns like the Two-Pointer technique solve palindrome problems in O(N) time and O(1) space.' 
+        }
+      ],
+      quiz: [
+        { q: "Why is inserting an element at index 0 of an array an O(N) operation?", options: ["Array size is fixed", "Existing elements must shift forward in memory", "Hash collision resolution", "Requires tree rebalancing"], answer: 1 },
+        { q: "How are contiguous array elements laid out in physical memory?", options: ["Randomly connected via pointers", "In sequential adjacent memory locations", "In a hierarchical tree structure", "In separate hash buckets"], answer: 1 },
+        { q: "What formula allows O(1) array index lookup?", options: ["base_address + (index * element_size)", "base_address * index", "index / total_elements", "base_address + index_squared"], answer: 0 },
+        { q: "In programming, strings are typically implemented under the hood as:", options: ["Linked Lists of nodes", "Arrays of characters", "Hash tables", "Binary search trees"], answer: 1 },
+        { q: "What is the time complexity of updating an element at a known index in an array?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "What is a main disadvantage of standard static arrays?", options: ["Slow lookup speed", "Fixed size allocated upfront", "Cannot store primitive types", "High pointer memory overhead"], answer: 1 },
+        { q: "What is the average time complexity of appending an item to a Dynamic Array?", options: ["O(1) amortized", "O(N) strictly", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "Which technique uses two pointers moving towards each other?", options: ["Two-Pointer Technique", "Sliding Window", "Divide and Conquer", "Breadth-First Search"], answer: 0 },
+        { q: "Deleting the last element of an array of size N takes how long?", options: ["O(1)", "O(N)", "O(log N)", "O(N log N)"], answer: 0 },
+        { q: "What happens when you access an index beyond bounds in C?", options: ["Automatic resizing", "Undefined behavior or buffer overflow", "Returns null automatically", "Converts into a linked list"], answer: 1 }
+      ]
+    },
+    { 
+      id: 'linkedlist', 
+      title: 'Linked Lists', 
+      node: '03', 
+      blurb: 'Linear sequence of discrete nodes linked dynamically via memory pointers.', 
+      lesson: [
+        { 
+          h: 'Node Structure & Pointers', 
+          b: 'Linked lists do not require contiguous memory. Each node contains data and reference pointers (`next`, `prev`) pointing to adjacent nodes.',
+          img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
+          caption: 'Figure 3.1: Nodes connected via reference pointers.'
+        },
+        { 
+          h: 'Insertion & Deletion Flexibility', 
+          b: 'Modifying items at known node locations requires simple pointer updates rather than shifting entire data blocks.' 
+        },
+        { 
+          h: 'Traversal Constraints', 
+          b: 'Finding an element requires sequential node traversal from the head pointer, resulting in O(N) linear search performance.' 
+        }
+      ],
+      quiz: [
+        { q: "What addition does a Doubly Linked List node have?", options: ["Data payload", "Pointer to next node", "Pointer to previous node", "Root index pointer"], answer: 2 },
+        { q: "What is the worst-case search time in an unsorted singly linked list?", options: ["O(1)", "O(log N)", "O(N)", "O(N²)"], answer: 2 },
+        { q: "What does the 'head' pointer in a Linked List reference?", options: ["The last node", "The middle node", "The first node", "The total size"], answer: 2 },
+        { q: "Inserting a new node at the head of a Linked List takes how long?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "In a Circular Linked List, what does the tail node's 'next' pointer reference?", options: ["null", "The head node", "The prev node", "A random node"], answer: 1 },
+        { q: "Why do Linked Lists NOT require contiguous memory?", options: ["Nodes use pointers to reference memory locations", "Nodes are stored in registers", "Nodes use hash tables", "Memory is pre-reserved"], answer: 0 },
+        { q: "Floyd's Cycle-Finding algorithm detects what?", options: ["Memory leaks", "A loop/cycle", "Duplicate values", "List length"], answer: 1 },
+        { q: "To delete a node given its predecessor, what pointer update is needed?", options: ["prev.next = current.next", "prev = current.next", "current.next = head", "head = current"], answer: 0 },
+        { q: "What is a main drawback of Linked Lists over Arrays?", options: ["Insertion is slower", "No O(1) random access by index", "Fixed capacity", "Cannot handle dynamic data"], answer: 1 },
+        { q: "In a Doubly Linked List, what does the 'prev' pointer of the head node point to?", options: ["Tail node", "Null", "Self", "Next node"], answer: 1 }
+      ]
+    },
+    { 
+      id: 'stacks', 
+      title: 'Stacks (LIFO)', 
+      node: '04', 
+      blurb: 'Last-In, First-Out sequence handling nested operations and call stacks.', 
+      lesson: [
+        { 
+          h: 'Core LIFO Operations', 
+          b: 'Push adds an item to the top, while Pop removes the top element. Both execute in O(1) constant time.',
+          img: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
+          caption: 'Figure 4.1: Stack push and pop mechanics.'
+        },
+        { 
+          h: 'Execution Call Stacks & Recursion', 
+          b: 'Environments maintain execution frames on a call stack. Exceeding stack bounds triggers a Stack Overflow.' 
+        },
+        { 
+          h: 'Practical Applications', 
+          b: 'Stacks power text editor undo/redo buffers and bracket matching validators.' 
+        }
+      ],
+      quiz: [
+        { q: "Which access rule describes a Stack data structure?", options: ["First-In, First-Out (FIFO)", "Last-In, First-Out (LIFO)", "Random Access", "Sorted Access"], answer: 1 },
+        { q: "Which operation removes the top item from a stack?", options: ["Push", "Enqueue", "Pop", "Peek"], answer: 2 },
+        { q: "Which operation views the top element without removing it?", options: ["Pop", "Peek / Top", "Push", "Dequeue"], answer: 1 },
+        { q: "What condition occurs when attempting to pop from an empty stack?", options: ["Stack Overflow", "Stack Underflow", "Memory Leak", "Deadlock"], answer: 1 },
+        { q: "Which computing mechanism relies directly on a stack?", options: ["Function call stack / recursion tracking", "Printer print queue", "CPU round-robin scheduling", "Network packet routing"], answer: 0 },
+        { q: "What is the time complexity of both Push and Pop operations?", options: ["O(1)", "O(N)", "O(log N)", "O(N log N)"], answer: 0 },
+        { q: "If elements A, B, C are pushed onto a stack in order, what is the order popped?", options: ["A, B, C", "C, B, A", "B, A, C", "C, A, B"], answer: 1 },
+        { q: "Which expression conversion uses a stack?", options: ["Infix to Postfix (Reverse Polish Notation)", "SQL query parsing", "Binary to Hexadecimal", "Base64 encoding"], answer: 0 },
+        { q: "What error occurs if recursive calls exceed the limit?", options: ["Stack Overflow", "NullPointerException", "Segmentation Fault", "Out of Memory Exception"], answer: 0 },
+        { q: "Undo/Redo functionality is commonly implemented using:", options: ["Two stacks", "One queue", "A binary search tree", "A graph"], answer: 0 }
+      ]
+    },
+    { 
+      id: 'queues', 
+      title: 'Queues (FIFO)', 
+      node: '05', 
+      blurb: 'First-In, First-Out model organizing sequential task execution and buffers.', 
+      lesson: [
+        { 
+          h: 'Core FIFO Mechanics', 
+          b: 'Items enter at the back via Enqueue and are removed from the front via Dequeue in O(1) time.',
+          img: 'https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=800&q=80',
+          caption: 'Figure 5.1: Queue processing order.'
+        },
+        { 
+          h: 'Circular Buffer Implementation', 
+          b: 'Array-backed queues utilize circular wrapping via modulo arithmetic to reuse empty slots efficiently.' 
+        },
+        { 
+          h: 'System Buffering & Graph Search', 
+          b: 'Queues manage asynchronous task requests and serve as the driver behind Breadth-First Search (BFS).' 
+        }
+      ],
+      quiz: [
+        { q: "In a standard Queue, where are new items inserted?", options: ["Front", "Rear / Back", "Middle", "Random Index"], answer: 1 },
+        { q: "Which processing order defines a standard Queue?", options: ["Last-In, First-Out (LIFO)", "First-In, First-Out (FIFO)", "Highest Value First", "Random Order"], answer: 1 },
+        { q: "Which operation removes an item from the front?", options: ["Enqueue", "Dequeue", "Push", "Pop"], answer: 1 },
+        { q: "What is the time complexity of Enqueue and Dequeue?", options: ["O(1)", "O(N)", "O(log N)", "O(N²)"], answer: 0 },
+        { q: "A Queue where elements are removed based on priority is called a:", options: ["Circular Queue", "Priority Queue", "Double-Ended Queue (Deque)", "Stack Queue"], answer: 1 },
+        { q: "What data structure allows insertion and deletion at both ends?", options: ["Deque (Double-ended queue)", "Single queue", "Stack", "Binary Heap"], answer: 0 },
+        { q: "In web servers, incoming requests waiting for processing are stored in a:", options: ["Stack", "Queue", "Hash Table", "Binary Tree"], answer: 1 },
+        { q: "In an array-based circular queue, what wraps indices around?", options: ["Modulo operator (%)", "Bitwise AND", "Division (/)", "Addition"], answer: 0 },
+        { q: "Attempting to dequeue from an empty queue causes:", options: ["Queue Underflow", "Queue Overflow", "Deadlock", "Segmentation Fault"], answer: 0 },
+        { q: "Which graph traversal algorithm utilizes a Queue internally?", options: ["Depth-First Search (DFS)", "Breadth-First Search (BFS)", "Dijkstra's Algorithm", "Kruskal's Algorithm"], answer: 1 }
+      ]
+    },
+    { 
+      id: 'hashtables', 
+      title: 'Hash Tables', 
+      node: '06', 
+      blurb: 'Key-value mapping structures driven by hash functions for rapid retrieval.', 
+      lesson: [
+        { 
+          h: 'Hash Functions & Indexing', 
+          b: 'Hash tables convert keys into numeric hash codes, mapping them directly to internal buckets to achieve O(1) average lookups.',
+          img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
+          caption: 'Figure 6.1: Key hashing into bucket indices.'
+        },
+        { 
+          h: 'Collision Resolution Strategies', 
+          b: 'When distinct keys hash to the same index, collisions are resolved via Separate Chaining or Open Addressing.' 
+        },
+        { 
+          h: 'Load Factor & Rehashing', 
+          b: 'When load factor occupancy crosses thresholds, tables undergo rehashing to expand capacity.' 
+        }
+      ],
+      quiz: [
+        { q: "What is the average time complexity for searching a key in a Hash Table?", options: ["O(1)", "O(N)", "O(log N)", "O(N log N)"], answer: 0 },
+        { q: "What occurs when two distinct keys yield the same hash code index?", options: ["Stack overflow", "Hash collision", "Memory leak", "Binary split"], answer: 1 },
+        { q: "Collision resolution using a linked list at each bucket is called:", options: ["Open Addressing", "Separate Chaining", "Linear Probing", "Quadratic Probing"], answer: 1 },
+        { q: "Probing sequentially through adjacent slots in Open Addressing is called:", options: ["Linear Probing", "Double Hashing", "Separate Chaining", "Rehashing"], answer: 0 },
+        { q: "What is the worst-case search time complexity with many collisions?", options: ["O(1)", "O(log N)", "O(N)", "O(N²)"], answer: 2 },
+        { q: "What metric represents the ratio of occupied slots to total capacity?", options: ["Collision Rate", "Load Factor", "Fill Quotient", "Hash Ratio"], answer: 1 },
+        { q: "What process happens when Load Factor exceeds its threshold?", options: ["Rehashing into a larger table", "Immediate truncation", "Garbage collection", "Conversion to a stack"], answer: 0 },
+        { q: "A good hash function should be deterministic and:", options: ["Distribute keys uniformly across buckets", "Produce identical hashes for all inputs", "Depend on current time", "Execute in O(N) time"], answer: 0 },
+        { q: "What structure is typically used for a Hash Set?", options: ["Underlying Hash Table with dummy values", "Binary Search Tree", "Linked List only", "Array without hashing"], answer: 0 },
+        { q: "Which data structure guarantees O(1) lookups on average?", options: ["Hash Table", "Binary Search Tree", "Sorted Array", "Doubly Linked List"], answer: 0 }
+      ]
+    },
+    { 
+      id: 'trees', 
+      title: 'Binary Trees & BST', 
+      node: '07', 
+      blurb: 'Hierarchical node models with parent-child branching and sorted invariants.', 
+      lesson: [
+        { 
+          h: 'Binary Search Tree (BST) Invariant', 
+          b: 'A BST enforces that left subtree nodes are smaller than the parent, and right nodes are larger, enabling O(log N) searches.',
+          img: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=800&q=80',
+          caption: 'Figure 7.1: BST branching structure.'
+        },
+        { 
+          h: 'Traversal Orders', 
+          b: 'Trees are explored via In-order, Pre-order, and Post-order traversals.' 
+        },
+        { 
+          h: 'Self-Balancing Optimization', 
+          b: 'Self-balancing variants like AVL and Red-Black trees perform automatic rotations to maintain logarithmic depth.' 
+        }
+      ],
+      quiz: [
+        { q: "In a valid BST, where are values smaller than the parent placed?", options: ["Right child subtree", "Left child subtree", "At the root only", "In leaf nodes only"], answer: 1 },
+        { q: "What is the maximum number of children a node in a Binary Tree can have?", options: ["1", "2", "3", "Unlimited"], answer: 1 },
+        { q: "What is the average search time complexity in a balanced BST?", options: ["O(1)", "O(log N)", "O(N)", "O(N²)"], answer: 1 },
+        { q: "Which tree traversal processes nodes in order: Left, Root, Right?", options: ["Pre-order", "In-order", "Post-order", "Level-order"], answer: 1 },
+        { q: "In-order traversal on a BST visits nodes in what sequence?", options: ["Descending order", "Sorted ascending order", "Random order", "Level by level"], answer: 1 },
+        { q: "Which traversal processes nodes: Root, Left, Right?", options: ["Pre-order", "In-order", "Post-order", "Breadth-first"], answer: 0 },
+        { q: "What is the worst-case search complexity in a skewed BST?", options: ["O(log N)", "O(1)", "O(N)", "O(N log N)"], answer: 2 },
+        { q: "What is a node called if it has zero children?", options: ["Root node", "Leaf node", "Internal node", "Ancestor node"], answer: 1 },
+        { q: "AVL Trees and Red-Black Trees are examples of what category?", options: ["Self-Balancing Binary Search Trees", "Heaps", "B-Trees", "Tries"], answer: 0 },
+        { q: "The top node in a tree hierarchy with no parent is called the:", options: ["Leaf", "Root", "Head", "Branch"], answer: 1 }
+      ]
+    },
+    { 
+      id: 'graphs', 
+      title: 'Graphs & Traversals', 
+      node: '08', 
+      blurb: 'Networks composed of vertices connected via directed or weighted edges.', 
+      lesson: [
+        { 
+          h: 'Graph Structures & Representations', 
+          b: 'Graphs model relational data using Vertices and Edges via Adjacency Lists or Matrices.',
+          img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+          caption: 'Figure 8.1: Network topology.'
+        },
+        { 
+          h: 'BFS vs DFS Traversals', 
+          b: 'BFS explores neighbor nodes level-by-level using queues; DFS probes deep paths using stacks.' 
+        },
+        { 
+          h: 'Pathfinding & Spanning Trees', 
+          b: 'Advanced algorithms solve shortest paths with Dijkstra\'s algorithm or minimum spanning trees with Kruskal\'s strategy.' 
+        }
+      ],
+      quiz: [
+        { q: "Which helper data structure is typically used to implement BFS?", options: ["Stack", "Queue", "Binary Heap", "Hash Map"], answer: 1 },
+        { q: "Which traversal explores as deep as possible before backtracking?", options: ["Breadth-First Search (BFS)", "Depth-First Search (DFS)", "Level-Order Search", "Dijkstra's Search"], answer: 1 },
+        { q: "What elements make up a standard Graph data structure?", options: ["Keys and Values", "Vertices (Nodes) and Edges (Links)", "Pointers and Offsets", "Rows and Columns"], answer: 1 },
+        { q: "A graph whose edges have specific directional indicators is called a:", options: ["Undirected Graph", "Directed Graph (Digraph)", "Weighted Graph", "Bipartite Graph"], answer: 1 },
+        { q: "Which algorithm finds the single-source shortest path with non-negative weights?", options: ["Dijkstra's Algorithm", "Kruskal's Algorithm", "Prim's Algorithm", "Bellman-Ford Algorithm"], answer: 0 },
+        { q: "What graph matrix uses an N x N boolean table to store edge connections?", options: ["Adjacency Matrix", "Adjacency List", "Incidence Matrix", "Edge Array"], answer: 0 },
+        { q: "Helper data structure used in DFS:", options: ["Queue", "Stack", "Priority Queue", "Disjoint Set"], answer: 1 },
+        { q: "A graph with no cycles is called an:", options: ["Cyclic Graph", "Acyclic Graph", "Complete Graph", "Dense Graph"], answer: 1 },
+        { q: "Which representation uses an array of lists to store neighbors?", options: ["Adjacency List", "Adjacency Matrix", "Edge List", "Incidence List"], answer: 0 },
+        { q: "What algorithm finds a Minimum Spanning Tree (MST) using greedy edge selection?", options: ["Kruskal's Algorithm", "Dijkstra's Algorithm", "Floyd-Warshall Algorithm", "A* Algorithm"], answer: 0 }
+      ]
+    }
+  ];
+
+  function renderTopic(index) {
+    const t = TOPICS[index];
+    
+    document.querySelectorAll('.cell').forEach((cell, i) => {
+      cell.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.node').forEach((node, i) => {
+      node.classList.toggle('active', i === index);
+    });
+
+    const lessonsHtml = t.lesson.map(l => `
+      <div class="lesson-block">
+        <h3>${l.h}</h3>
+        <p>${l.b}</p>
+        ${l.img ? `
+          <div class="topic-image-container">
+            <img src="${l.img}" alt="${l.h}" class="topic-image" />
+            ${l.caption ? `<div class="image-caption">${l.caption}</div>` : ''}
+          </div>
+        ` : ''}
+      </div>
+    `).join('');
+
+    const nextTopicIndex = (index + 1) % TOPICS.length;
+    const nextTopicTitle = TOPICS[nextTopicIndex].title;
+
+    document.getElementById('mainContent').innerHTML = `
+      <h2>${t.title}</h2>
+      <p style="color: var(--text-muted); font-size: 1em; margin-bottom: 20px;">${t.blurb}</p>
+      ${lessonsHtml}
+      <button class="next-topic-btn" onclick="completeTopicAndAdvance('${t.id}', ${nextTopicIndex})">
+        Next Topic: ${nextTopicTitle} &rarr;
+      </button>
+    `;
+  }
+
+  function completeTopicAndAdvance(topicId, nextIdx) {
+    if (!completedTopics[topicId]) {
+      completedTopics[topicId] = true;
+      localStorage.setItem('cq_completed_topics', JSON.stringify(completedTopics));
+      
+      const topicObj = TOPICS.find(t => t.id === topicId);
+      document.getElementById('modal-title-reward').innerText = `Completed: ${topicObj.title}! 🎉`;
+      document.getElementById('reward-modal-desc').innerText = `Amazing job! You've unlocked the completion reward badge for ${topicObj.title}. Keep up the great coding journey!`;
+      document.getElementById('reward-modal').classList.add('active');
+    } else {
+      renderTopic(nextIdx);
+    }
+  }
+
+  function closeRewardModal() {
+    document.getElementById('reward-modal').classList.remove('active');
+    renderTopic((TOPICS.findIndex(t => t.title === document.querySelector('#mainContent h2').innerText) + 1) % TOPICS.length);
+  }
+
+  function renderTutor() {
+    document.getElementById('arrayCells').innerHTML = TOPICS.map((t, idx) => 
+      `<div class="cell ${idx === 0 ? 'active' : ''}" onclick="renderTopic(${idx})">${t.node}</div>`
+    ).join('');
+    
+    document.getElementById('chain').innerHTML = TOPICS.map((t, idx) => 
+      `<button class="node ${idx === 0 ? 'active' : ''}" onclick="renderTopic(${idx})"><b>${t.node}.</b> ${t.title}</button>`
+    ).join('');
+    
+    renderTopic(0);
+  }
+
+  function initQuizView() {
+    const selectEl = document.getElementById('quiz-topic-select');
+    selectEl.innerHTML = TOPICS.map((t, idx) => `<option value="${idx}">${t.node}. ${t.title}</option>`).join('');
+    onTopicSelectChange(0);
+  }
+
+  function onTopicSelectChange(topicIndex) {
+    document.getElementById('scramble-btn').style.display = 'none';
+    const topic = TOPICS[topicIndex];
+    activeQuizQuestions = topic.quiz.map(q => ({
+      q: q.q,
+      options: [...q.options],
+      answer: q.answer
+    }));
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+  }
+
+  function saveCurrentAnswer() {
+    const checkedOpt = document.querySelector(`input[name="current_q"]:checked`);
+    if (checkedOpt) {
+      userAnswers[currentQuestionIndex] = parseInt(checkedOpt.value);
+    }
+  }
+
+  function renderCurrentQuestion() {
+    const container = document.getElementById('quiz-question-content');
+    const progressText = document.getElementById('quiz-progress-text');
+    const prevBtn = document.getElementById('prev-q-btn');
+    const nextBtn = document.getElementById('next-q-btn');
+
+    if (!activeQuizQuestions || activeQuizQuestions.length === 0) {
+      container.innerHTML = '<p>No questions available.</p>';
+      return;
+    }
+
+    const qObj = activeQuizQuestions[currentQuestionIndex];
+    const savedAns = userAnswers[currentQuestionIndex];
+
+    container.innerHTML = `
+      <div>
+        <p style="margin-top:0; font-weight: 600; color: var(--amber); font-size: 1.05em;">Question ${currentQuestionIndex + 1}: ${qObj.q}</p>
+        <div style="margin-top: 12px;">
+          ${qObj.options.map((opt, optIdx) => `
+            <label class="quiz-option-label">
+              <input type="radio" name="current_q" value="${optIdx}" ${savedAns === optIdx ? 'checked' : ''} onchange="saveCurrentAnswer()">
+              <span>${opt}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    progressText.innerText = `Question ${currentQuestionIndex + 1} of ${activeQuizQuestions.length}`;
+    prevBtn.style.visibility = currentQuestionIndex === 0 ? 'hidden' : 'visible';
+
+    if (currentQuestionIndex === activeQuizQuestions.length - 1) {
+      nextBtn.innerText = 'Submit Quiz 🏁';
+      nextBtn.style.backgroundColor = 'var(--mint)';
+      nextBtn.style.color = '#12141c';
+    } else {
+      nextBtn.innerText = 'Next →';
+      nextBtn.style.backgroundColor = 'var(--amber)';
+      nextBtn.style.color = '#12141c';
+    }
+  }
+
+  function prevQuestion() {
+    saveCurrentAnswer();
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      renderCurrentQuestion();
+    }
+  }
+
+  function nextQuestion() {
+    saveCurrentAnswer();
+    
+    if (userAnswers[currentQuestionIndex] === undefined) {
+      showAlert('Please select an option before proceeding!', 'error');
+      return;
+    }
+
+    if (currentQuestionIndex < activeQuizQuestions.length - 1) {
+      currentQuestionIndex++;
+      renderCurrentQuestion();
+    } else {
+      submitQuizResults();
+    }
+  }
+
+  function scrambleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function retakeAndScrambleQuiz() {
+    scrambleArray(activeQuizQuestions);
+    activeQuizQuestions.forEach(qObj => {
+      const correctAnswerText = qObj.options[qObj.answer];
+      scrambleArray(qObj.options);
+      qObj.answer = qObj.options.indexOf(correctAnswerText);
+    });
+    currentQuestionIndex = 0;
+    userAnswers = {};
+    renderCurrentQuestion();
+    showAlert('Quiz re-scrambled! Test yourself again.', 'success');
+  }
+
+  function submitQuizResults() {
+    const selectedTopicIdx = document.getElementById('quiz-topic-select').value;
+    const topic = TOPICS[selectedTopicIdx];
+    let calculatedScore = 0;
+    const totalQuestions = activeQuizQuestions.length;
+    let breakdownHtml = '';
+
+    activeQuizQuestions.forEach((qObj, qIdx) => {
+      const userSelectedVal = userAnswers[qIdx] !== undefined ? userAnswers[qIdx] : -1;
+      const isCorrect = userSelectedVal === qObj.answer;
+
+      if (isCorrect) calculatedScore++;
+
+      breakdownHtml += `
+        <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border);">
+          <div style="font-weight: 600; color: ${isCorrect ? 'var(--mint)' : '#f2777a'}; font-size: 0.9em;">
+            ${isCorrect ? '✓ Correct' : '✗ Incorrect'} - Q${qIdx + 1}: ${qObj.q}
+          </div>
+          <div style="font-size: 0.8em; color: var(--text-muted); margin-top: 2px;">
+            Your Answer: ${userSelectedVal >= 0 ? qObj.options[userSelectedVal] : 'None'}<br>
+            ${!isCorrect ? `<span style="color: var(--mint);">Correct: ${qObj.options[qObj.answer]}</span>` : ''}
+          </div>
+        </div>
+      `;
+    });
+
+    const percent = Math.round((calculatedScore / totalQuestions) * 100);
+
+    pendingQuizResult = {
+      quiz_name: `${topic.title} Quiz`,
+      score: calculatedScore,
+      max_score: totalQuestions
+    };
+
+    document.getElementById('modal-title').innerText = `${topic.title} Results`;
+    document.getElementById('modal-score-summary').innerHTML = `Score: ${calculatedScore} / ${totalQuestions} (${percent}%)`;
+    document.getElementById('modal-breakdown').innerHTML = breakdownHtml;
+
+    document.getElementById('save-score-btn').disabled = false;
+    document.getElementById('save-score-btn').innerText = '💾 Save Score';
+    document.getElementById('scramble-btn').style.display = 'inline-block';
+    
+    document.getElementById('quiz-modal').classList.add('active');
+  }
+
+  async function saveQuizScore() {
+    if (!pendingQuizResult) return;
+    if (!authToken) {
+      showAlert('Please login to save your score!', 'error');
+      closeQuizModal();
+      return;
+    }
+
+    const saveBtn = document.getElementById('save-score-btn');
+    saveBtn.innerText = 'Saving...';
+    saveBtn.disabled = true;
+
+    const res = await fetch(`${API_URL}/scores`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify(pendingQuizResult)
+    });
+
+    if (res.ok) {
+      saveBtn.innerText = '✓ Saved!';
+      showAlert(`Score of ${pendingQuizResult.score}/${pendingQuizResult.max_score} saved!`, 'success');
+    } else {
+      saveBtn.innerText = 'Save Failed';
+      saveBtn.disabled = false;
+      showAlert('Failed to save score.', 'error');
+    }
+  }
+
+  function closeQuizModal() {
+    document.getElementById('quiz-modal').classList.remove('active');
+  }
+
+  function retakeAndScrambleQuizFromModal() {
+    closeQuizModal();
+    retakeAndScrambleQuiz();
+  }
+
+  // Initialization Calls
+  initTheme();
+  updateNav();
+  renderTutor();
+  initQuizView();
+  if (authToken) switchTab('tutor');
+</script>
+</body>
+</html>
