@@ -43,12 +43,77 @@
     body { background: var(--bg); min-height: 100vh; margin: 0; padding: 0; color: var(--text); transition: background 0.3s, color 0.3s; }
 
     /* ========================================================
-       2. RESPONSIVE NAVBAR
+       2. LOADING SCREEN / SPLASH OVERLAY
        ======================================================== */
-    .navbar { background: var(--navbar-bg); padding: 12px 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); width: 100%; }
-    .logo-container { display: flex; align-items: center; gap: 10px; color: white; flex-shrink: 0; }
-    .logo-icon { width: 36px; height: 36px; background: var(--amber); color: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; }
-    .logo-text { font-size: 1.4em; font-weight: 700; color: #ffffff; white-space: nowrap; }
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0b0d14;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    #loading-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .loading-logo {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 25px rgba(242, 166, 90, 0.3);
+      animation: pulseLogo 1.5s infinite alternate;
+    }
+    @keyframes pulseLogo {
+      0% { transform: scale(1); box-shadow: 0 0 15px rgba(242, 166, 90, 0.2); }
+      100% { transform: scale(1.05); box-shadow: 0 0 30px rgba(111, 227, 180, 0.4); }
+    }
+    .loading-title {
+      font-size: 2em;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+    .loading-subtitle {
+      font-size: 0.95em;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+    .loading-bar-track {
+      width: 220px;
+      height: 4px;
+      background: var(--surface-2);
+      border-radius: 2px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .loading-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--amber), var(--mint));
+      animation: fillBar 2.3s forwards cubic-bezier(0.1, 0.8, 0.3, 1);
+    }
+    @keyframes fillBar {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    /* ========================================================
+       3. RESPONSIVE NAVBAR
+       ======================================================== */
+    .navbar { background: var(--navbar-bg); padding: 10px 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); width: 100%; }
+    .logo-container { display: flex; align-items: center; gap: 12px; color: white; flex-shrink: 0; text-decoration: none; }
+    .nav-logo-img { width: 38px; height: 38px; object-fit: contain; border-radius: 8px; }
+    .logo-text { font-size: 1.35em; font-weight: 700; color: #ffffff; white-space: nowrap; letter-spacing: 0.5px; }
 
     .nav-tabs { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; overflow-x: auto; }
     .nav-btn { background: rgba(255, 255, 255, 0.15); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85em; white-space: nowrap; transition: all 0.2s; }
@@ -74,7 +139,7 @@
     input:focus, select:focus { border-color: var(--amber); outline: none; }
     
     /* ========================================================
-       3. PASSWORD TOGGLE & OVERLAP PREVENTION
+       4. PASSWORD TOGGLE & OVERLAP PREVENTION
        ======================================================== */
     .pwd-wrapper { position: relative; display: block; width: 100%; }
     .pwd-wrapper input[type="password"],
@@ -114,7 +179,7 @@
     .cell.active { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); font-weight: bold; }
 
     /* ========================================================
-       4. DSA TUTOR LAYOUT (Desktop Side-by-Side Grid)
+       5. DSA TUTOR LAYOUT (Desktop Side-by-Side Grid)
        ======================================================== */
     .dsa-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; margin-top: 20px; }
     aside.dsa-aside { display: flex; flex-direction: column; gap: 8px; }
@@ -163,11 +228,12 @@
     .sec-btn:hover { background: var(--border); }
 
     /* ========================================================
-       5. MOBILE RESPONSIVE ADAPTATION (< 768px)
+       6. MOBILE RESPONSIVE ADAPTATION (< 768px)
        ======================================================== */
     @media (max-width: 767px) {
       .navbar { padding: 10px 15px; }
-      .logo-text { font-size: 1.2em; }
+      .logo-text { font-size: 1.15em; }
+      .nav-logo-img { width: 32px; height: 32px; }
       .nav-btn { padding: 5px 10px; font-size: 0.8em; }
       .theme-toggle-btn { padding: 5px 8px; font-size: 0.8em; }
       
@@ -183,11 +249,21 @@
 </head>
 <body data-theme="dark">
 
-<div class="navbar">
-  <div class="logo-container">
-    <div class="logo-icon">&lt;/&gt;</div>
-    <div class="logo-text">CodeQuest</div>
+<!-- 2-3 SECOND LOADING SCREEN -->
+<div id="loading-screen">
+  <img src="image_a4ef13.jpg" alt="CodeQuest Logo" class="loading-logo">
+  <div class="loading-title">CodeQuest</div>
+  <div class="loading-subtitle">Explore • Build • Innovate</div>
+  <div class="loading-bar-track">
+    <div class="loading-bar-fill"></div>
   </div>
+</div>
+
+<div class="navbar">
+  <a class="logo-container" href="#" onclick="switchTab(authToken ? 'tutor' : 'auth')">
+    <img src="image_a4ef13.jpg" alt="CodeQuest Logo" class="nav-logo-img">
+    <div class="logo-text">CodeQuest</div>
+  </a>
   
   <div class="nav-tabs" id="nav-container">
     <button class="nav-btn" onclick="switchTab('tutor')">DSA Tutor</button>
@@ -422,6 +498,14 @@
 </div>
 
 <script>
+  // Hide loading screen after ~2.4 seconds
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const loader = document.getElementById('loading-screen');
+      if (loader) loader.classList.add('fade-out');
+    }, 2400);
+  });
+
   const API_URL = '/api';
   let currentUser = JSON.parse(localStorage.getItem('cq_user')) || null;
   let authToken = localStorage.getItem('cq_token') || null;
