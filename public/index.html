@@ -40,7 +40,7 @@
     * { box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: var(--bg); min-height: 100vh; margin: 0; padding: 0; color: var(--text); transition: background 0.3s, color 0.3s; }
 
-    /* RESPONSIVE NAVBAR */
+    /* NAVBAR */
     .navbar { background: var(--navbar-bg); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
     .logo-container { display: flex; align-items: center; gap: 10px; color: white; }
     .logo-icon { width: 36px; height: 36px; background: var(--amber); color: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; }
@@ -57,7 +57,6 @@
     .logout-btn { background: #f2777a; color: white; font-size: 0.8em; padding: 4px 8px; border-radius: 4px; cursor: pointer; border: none; }
     .logout-btn:hover { background: #d65c5f; }
 
-    /* FLUID CONTAINERS */
     .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
     .card { background: var(--surface); padding: 20px; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); margin-bottom: 20px; transition: background 0.3s, border-color 0.3s; }
 
@@ -69,7 +68,6 @@
     input, select, button { padding: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 6px; font-size: 1em; width: 100%; transition: background 0.3s, color 0.3s, border-color 0.3s; }
     input:focus, select:focus { border-color: var(--amber); outline: none; }
     
-    /* Password Input Wrapper with Toggle Eye */
     .pwd-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
     .pwd-wrapper input { width: 100%; padding-right: 40px; }
     .pwd-toggle-btn { position: absolute; right: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1em; padding: 0; }
@@ -88,30 +86,32 @@
     .view-section { display: none; }
     .view-section.active { display: block; }
 
-    /* RESPONSIVE ADMIN TABLE CONTAINER */
     .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 15px; }
     table.admin-table { width: 100%; border-collapse: collapse; min-width: 600px; }
     table.admin-table th, table.admin-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); color: var(--text); font-size: 0.9em; }
     table.admin-table th { background: var(--surface-2); color: var(--amber); }
 
-    /* DSA Tutor Responsive Layout */
     .score-pill { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 100px; padding: 5px 12px; }
     .score-pill b { color: var(--mint); }
     .array-cells { display: flex; gap: 6px; flex-wrap: wrap; }
     .cell { width: 40px; height: 40px; border: 1px solid var(--border); background: var(--surface-2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
     .cell.active { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); font-weight: bold; }
 
-    /* Mobile First Stack for DSA Layout */
-    .dsa-layout { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
-    aside.dsa-aside { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
-    .node { width: 100%; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; cursor: pointer; text-align: left; color: var(--text); font-size: 0.9em; }
+    /* MOBILE-FIRST DSA LAYOUT (Default for Mobile Phones) */
+    .dsa-layout { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    aside.dsa-aside { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; -webkit-overflow-scrolling: touch; }
+    aside.dsa-aside::-webkit-scrollbar { height: 4px; }
+    aside.dsa-aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    
+    .node { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; color: var(--text); font-size: 0.85em; white-space: nowrap; }
     .node:hover, .node.active { border-color: var(--amber); background: var(--surface-2); }
+    
     main.dsa-main { padding: 0; }
     .lesson-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
     .lesson-block h3 { color: var(--amber); margin-top: 0; font-size: 1.1em; }
     
     .topic-image-container { margin-top: 15px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: var(--surface-2); text-align: center; }
-    .topic-image { width: 100%; max-height: 260px; object-fit: cover; display: block; }
+    .topic-image { width: 100%; max-height: 240px; object-fit: cover; display: block; }
     .image-caption { padding: 8px 12px; font-size: 0.8em; color: var(--text-muted); font-style: italic; background: var(--surface-2); }
 
     .next-topic-btn { background: var(--surface-2); color: var(--amber); border: 1px solid var(--amber); border-radius: 8px; padding: 12px 20px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; width: 100%; }
@@ -121,11 +121,9 @@
     .quiz-option-label input { margin-top: 3px; width: auto; flex-shrink: 0; }
     .quiz-option-label:hover { border-color: var(--amber); }
 
-    /* Quiz Navigation Bar */
     .quiz-nav-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 10px; flex-wrap: wrap; }
     .quiz-progress-indicator { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; color: var(--text-muted); width: 100%; text-align: center; order: 3; }
 
-    /* Modal Overlay */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
     .modal-overlay.active { display: flex; }
     .modal-card { background: var(--surface); border: 1px solid var(--amber); border-radius: 12px; width: 100%; max-width: 550px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); color: var(--text); }
@@ -134,7 +132,7 @@
     .sec-btn { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
     .sec-btn:hover { background: var(--border); }
 
-    /* DESKTOP MEDIA QUERY BREAKPOINT (768px and up) */
+    /* LAPTOP & COMPUTER MEDIA QUERY BREAKPOINT (768px and up) */
     @media (min-width: 768px) {
       .navbar { padding: 15px 30px; }
       .logo-text { font-size: 1.6em; }
@@ -143,10 +141,10 @@
       .card { padding: 25px; }
       h2 { font-size: 1.5em; }
       
-      /* Switch DSA layout back to sidebar side-by-side grid */
+      /* Switch DSA layout to traditional desktop vertical sidebar grid */
       .dsa-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; }
-      aside.dsa-aside { display: block; }
-      .node { margin-bottom: 8px; }
+      aside.dsa-aside { display: flex; flex-direction: column; overflow-x: visible; padding-bottom: 0; }
+      .node { width: 100%; margin-bottom: 8px; flex: none; font-size: 0.95em; white-space: normal; }
       .next-topic-btn { width: auto; }
       
       .quiz-progress-indicator { width: auto; order: initial; }
@@ -269,9 +267,8 @@
     </div>
 
     <div class="dsa-layout">
-      <aside class="dsa-aside">
-        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 5px; grid-column: 1 / -1;">LESSON PATH</div>
-        <div id="chain" style="display: contents;"></div>
+      <aside class="dsa-aside" id="chain">
+        <!-- Populated dynamically -->
       </aside>
       <main class="dsa-main" id="mainContent"></main>
     </div>
@@ -353,13 +350,11 @@
   let currentUser = JSON.parse(localStorage.getItem('cq_user')) || null;
   let authToken = localStorage.getItem('cq_token') || null;
 
-  // Track active quiz state
   let activeQuizQuestions = [];
   let currentQuestionIndex = 0;
   let userAnswers = {}; 
   let pendingQuizResult = null;
 
-  // Theme Initializer
   function initTheme() {
     const savedTheme = localStorage.getItem('cq_theme') || 'dark';
     document.body.setAttribute('data-theme', savedTheme);
@@ -448,7 +443,6 @@
     setTimeout(() => { box.style.display = 'none'; }, 4000);
   }
 
-  // AUTH HANDLERS
   document.getElementById('register-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {
@@ -534,7 +528,6 @@
     switchTab('auth');
   }
 
-  // ADMIN SCORES DASHBOARD
   async function loadAdminScores() {
     const res = await fetch(`${API_URL}/admin/user-scores`, {
       headers: { 'Authorization': `Bearer ${authToken}` }
@@ -580,7 +573,6 @@
     }
   }
 
-  // ALL 8 DSA TOPICS
   const TOPICS = [
     { 
       id: 'bigo', 
@@ -856,7 +848,6 @@
     }
   ];
 
-  // TUTOR FUNCTIONS
   function renderTopic(index) {
     const t = TOPICS[index];
     
@@ -905,7 +896,6 @@
     renderTopic(0);
   }
 
-  // QUIZ FUNCTIONS
   function initQuizView() {
     const selectEl = document.getElementById('quiz-topic-select');
     selectEl.innerHTML = TOPICS.map((t, idx) => `<option value="${idx}">${t.node}. ${t.title}</option>`).join('');
@@ -1104,7 +1094,6 @@
     retakeAndScrambleQuiz();
   }
 
-  // Initialization
   initTheme();
   updateNav();
   renderTutor();
