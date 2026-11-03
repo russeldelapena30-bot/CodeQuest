@@ -64,17 +64,13 @@
       visibility: hidden;
     }
     .loading-logo {
-      width: 110px;
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #0ea5e9, #f2a65a);
-      border-radius: 24px;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 20px;
       margin-bottom: 20px;
       box-shadow: 0 0 25px rgba(242, 166, 90, 0.3);
       animation: pulseLogo 1.5s infinite alternate;
-      font-size: 3em;
     }
     @keyframes pulseLogo {
       0% { transform: scale(1); box-shadow: 0 0 15px rgba(242, 166, 90, 0.2); }
@@ -116,7 +112,7 @@
        ======================================================== */
     .navbar { background: var(--navbar-bg); padding: 10px 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); width: 100%; }
     .logo-container { display: flex; align-items: center; gap: 10px; color: white; flex-shrink: 0; text-decoration: none; cursor: pointer; }
-    .nav-logo-box { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0ea5e9, #f2a65a); border-radius: 8px; font-size: 1.2em; font-weight: bold; color: white; }
+    .nav-logo-img { width: 36px; height: 36px; object-fit: cover; border-radius: 6px; }
     .logo-text { font-size: 1.35em; font-weight: 700; color: #ffffff; white-space: nowrap; letter-spacing: 0.5px; }
 
     .nav-tabs { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; overflow-x: auto; }
@@ -237,7 +233,7 @@
     @media (max-width: 767px) {
       .navbar { padding: 10px 15px; }
       .logo-text { font-size: 1.1em; }
-      .nav-logo-box { width: 30px; height: 30px; font-size: 1em; }
+      .nav-logo-img { width: 30px; height: 30px; }
       .nav-btn { padding: 5px 10px; font-size: 0.8em; }
       .theme-toggle-btn { padding: 5px 8px; font-size: 0.8em; }
       
@@ -255,7 +251,7 @@
 
 <!-- 2-3 SECOND LOADING SCREEN -->
 <div id="loading-screen">
-  <div class="loading-logo">🧭</div>
+  <img src="data:image/webp;base64,UklGRqYAAABXRUJQVlA4WAoAAAAQAAAAQwAAQwAAQUxQSFgAAAABH4B0SUpKSkqKiooAAAAAAEJKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBK" alt="CodeQuest Logo" class="loading-logo">
   <div class="loading-title">CodeQuest</div>
   <div class="loading-subtitle">Explore • Build • Innovate</div>
   <div class="loading-bar-track">
@@ -265,7 +261,7 @@
 
 <div class="navbar">
   <a class="logo-container" onclick="switchTab(authToken ? 'tutor' : 'auth')">
-    <div class="nav-logo-box">🧭</div>
+    <img src="data:image/webp;base64,UklGRqYAAABXRUJQVlA4WAoAAAAQAAAAQwAAQwAAQUxQSFgAAAABH4B0SUpKSkqKiooAAAAAAEJKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBKSkpKSkoAAAAAAElJSUpKSkoAAABKSoqKSlBKQkpKSlBK" alt="CodeQuest Logo" class="nav-logo-img">
     <div class="logo-text">CodeQuest</div>
   </a>
   
@@ -1297,14 +1293,6 @@
       showAlert('Failed to save score.', 'error');
     }
   }
-
-  logoContainerBtn.onclick = function() {
-    if (typeof authToken !== 'undefined' && authToken) {
-      switchTab('tutor');
-    } else {
-      switchTab('auth');
-    }
-  };
 
   function closeQuizModal() {
     document.getElementById('quiz-modal').classList.remove('active');
