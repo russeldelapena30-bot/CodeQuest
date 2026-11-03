@@ -549,27 +549,27 @@
     }
   }
 
-  // ALL 8 DSA TOPICS WITH DETAILED LESSONS, ILLUSTRATIONS, AND TAILORED QUIZZES
+  // ALL 8 DSA TOPICS WITH DETAILED ACADEMIC LESSONS, ILLUSTRATIONS, AND TAILORED QUIZZES
   const TOPICS = [
     { 
       id: 'bigo', 
       title: 'Big-O Notation', 
       node: '01', 
-      blurb: 'Mathematical framework describing how algorithmic performance scales with input size (N).', 
+      blurb: 'Formal mathematical framework classifying algorithmic scalability relative to input size (N).', 
       lesson: [
         { 
-          h: 'Asymptotic Analysis & Growth Rates', 
-          b: 'Big-O analysis evaluates an algorithm\'s efficiency independently of hardware fluctuations by focusing on the dominant growth term as input size (N) approaches infinity. It classifies performance into distinct tiers ranging from O(1) constant time to O(N!) factorial growth.',
+          h: 'Asymptotic Analysis & Upper Bounds', 
+          b: 'Big-O analysis evaluates an algorithm\'s efficiency independently of hardware fluctuations by focusing on the dominant growth term as input size (N) approaches infinity. It ignores lower-order terms and constant multipliers.',
           img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
-          caption: 'Figure 1.1: Visualizing execution curves across Big-O complexity classes.'
+          caption: 'Figure 1.1: Visualizing growth trajectories across Big-O complexity tiers.'
         },
         { 
           h: 'Time Complexity Tiers', 
-          b: 'Constant O(1) operations execute instantly regardless of data size (e.g., hash lookups). Logarithmic O(log N) splits problems in half each step (e.g., Binary Search). Linear O(N) scales proportionally with single-pass scans, while Quadratic O(N²) involves nested loops checking elements against each other.' 
+          b: 'Constant O(1) operations execute instantly regardless of data size. Logarithmic O(log N) splits problems in half at each step (e.g., Binary Search). Linear O(N) scales proportionally with single-pass scans, while Quadratic O(N²) involves nested loops checking elements against each other.' 
         },
         { 
           h: 'Space Complexity & Memory Overhead', 
-          b: 'Space complexity measures the total temporary memory (auxiliary space plus input storage) required during execution. Algorithms that utilize recursive call stacks or allocate auxiliary matrices consume additional memory proportional to input scale.' 
+          b: 'Space complexity measures total auxiliary memory plus input storage consumed during execution. Algorithms utilizing recursive call stacks or allocating auxiliary matrices incur space overhead proportional to input scale.' 
         }
       ],
       quiz: [
@@ -595,7 +595,7 @@
           h: 'Contiguous Memory Architecture', 
           b: 'Arrays store data items in adjacent memory locations. Using base memory addresses combined with element size arithmetic, compilers compute exact physical locations instantly, giving arrays O(1) random access lookup performance.',
           img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
-          caption: 'Figure 2.1: Contiguous memory allocation enabling index-based address arithmetic.'
+          caption: 'Figure 2.1: Contiguous memory blocks and index-based address arithmetic.'
         },
         { 
           h: 'Dynamic Resizing & Amortization', 
@@ -629,7 +629,7 @@
           h: 'Node Structure & Pointers', 
           b: 'Unlike arrays, linked lists do not require contiguous memory. Each node contains a data payload and reference pointers (`next` in singly linked lists; `prev` and `next` in doubly linked lists) pointing to adjacent nodes.',
           img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80',
-          caption: 'Figure 3.1: Singly and Doubly linked nodes connected via explicit memory references.'
+          caption: 'Figure 3.1: Nodes connected via memory reference pointers.'
         },
         { 
           h: 'Insertion & Deletion Flexibility', 
@@ -663,7 +663,7 @@
           h: 'Core LIFO Operations', 
           b: 'Stacks enforce strict Last-In, First-Out ordering. The `Push` operation adds an item to the top, while `Pop` removes the top element. Both execute in O(1) constant time.',
           img: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
-          caption: 'Figure 4.1: Stack push and pop mechanics operating exclusively on the top element.'
+          caption: 'Figure 4.1: Stack push and pop mechanics operating on the top element.'
         },
         { 
           h: 'Execution Call Stacks & Recursion', 
